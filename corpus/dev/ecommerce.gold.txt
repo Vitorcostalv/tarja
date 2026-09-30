@@ -1,0 +1,91 @@
+# Gabarito: ecommerce (desenvolvimento). Ver corpus/GABARITO.md.
+
+clientes.id nid
+clientes.nome idd
+clientes.cpf idd
+clientes.email idd
+clientes.telefone idd
+clientes.data_nascimento out
+clientes.sexo out
+clientes.senha_hash nid ?
+clientes.ativo nid
+clientes.criado_em nid
+clientes.atualizado_em nid
+
+enderecos.id nid
+enderecos.cliente_id nid
+enderecos.logradouro loc
+enderecos.numero loc
+enderecos.complemento loc
+enderecos.bairro loc
+enderecos.cidade loc
+enderecos.uf loc
+enderecos.cep loc
+enderecos.principal nid
+@achado SEM_CICLO_DE_VIDA enderecos
+
+categorias.id nid
+categorias.nome nid
+categorias.slug nid
+
+produtos.id nid
+produtos.categoria_id nid
+produtos.nome nid
+produtos.descricao nid
+produtos.sku nid
+produtos.preco nid
+produtos.estoque nid
+produtos.criado_em nid
+
+pedidos.id nid
+pedidos.cliente_id nid
+pedidos.status nid
+pedidos.valor_total nid
+pedidos.frete nid
+pedidos.cep_entrega loc
+pedidos.ip_cliente loc
+pedidos.observacao nid ?
+pedidos.criado_em nid
+@achado TEXTO_LIVRE pedidos.observacao
+
+itens_pedido.id nid
+itens_pedido.pedido_id nid
+itens_pedido.produto_id nid
+itens_pedido.quantidade nid
+itens_pedido.preco_unitario nid
+
+pagamentos.id nid
+pagamentos.pedido_id nid
+pagamentos.metodo nid
+pagamentos.nome_titular idd
+pagamentos.cartao_ultimos4 fin
+pagamentos.cartao_token fin
+pagamentos.bandeira nid
+pagamentos.chave_pix fin
+pagamentos.valor nid
+pagamentos.status nid
+pagamentos.criado_em nid
+
+avaliacoes.id nid
+avaliacoes.produto_id nid
+avaliacoes.cliente_id nid
+avaliacoes.nota nid
+avaliacoes.comentario nid ?
+avaliacoes.criado_em nid
+
+logs_acesso.id nid
+logs_acesso.cliente_id nid
+logs_acesso.ip loc
+logs_acesso.user_agent out ?
+logs_acesso.rota nid
+logs_acesso.criado_em nid
+@achado PESSOAL_EM_LOG logs_acesso
+
+lojas_fisicas.id nid
+lojas_fisicas.nome nid
+lojas_fisicas.endereco nid
+lojas_fisicas.cidade nid
+lojas_fisicas.cep nid
+lojas_fisicas.telefone nid
+lojas_fisicas.latitude nid
+lojas_fisicas.longitude nid

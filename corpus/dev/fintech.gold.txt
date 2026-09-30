@@ -1,0 +1,92 @@
+# Gabarito: fintech (desenvolvimento). Ver corpus/GABARITO.md.
+
+usuarios.id nid
+usuarios.nome_completo idd
+usuarios.cpf idd
+usuarios.email idd
+usuarios.telefone idd
+usuarios.data_nascimento out
+usuarios.renda_mensal fin
+usuarios.profissao out
+usuarios.pep out ?
+usuarios.menor_de_idade cri
+usuarios.responsavel_legal_id cri
+usuarios.selfie_url out
+usuarios.biometria_facial_template sen:biometrico
+usuarios.senha_hash nid ?
+usuarios.pin_hash nid ?
+usuarios.status nid
+usuarios.created_at nid
+usuarios.updated_at nid
+@achado INDICIO_MENOR usuarios
+
+documentos_kyc.id nid
+documentos_kyc.user_id nid
+documentos_kyc.tipo nid
+documentos_kyc.numero_documento idd
+documentos_kyc.arquivo_frente_url idd
+documentos_kyc.arquivo_verso_url idd
+documentos_kyc.validado nid
+documentos_kyc.created_at nid
+
+contas.id nid
+contas.user_id nid
+contas.agencia fin
+contas.numero_conta fin
+contas.saldo fin
+contas.limite_credito fin
+contas.score_credito fin
+contas.created_at nid
+contas.closed_at nid
+
+cartoes.id nid
+cartoes.conta_id nid
+cartoes.numero_token fin
+cartoes.ultimos_digitos fin
+cartoes.validade fin
+cartoes.nome_impresso idd
+cartoes.bloqueado nid
+cartoes.created_at nid
+
+transacoes.id nid
+transacoes.conta_id nid
+transacoes.tipo nid
+transacoes.valor fin
+transacoes.descricao out ?
+transacoes.contraparte_nome idd
+transacoes.contraparte_documento idd
+transacoes.chave_pix_destino fin
+transacoes.latitude loc
+transacoes.longitude loc
+transacoes.created_at nid
+
+emprestimos.id nid
+emprestimos.conta_id nid
+emprestimos.valor_solicitado fin
+emprestimos.taxa_juros_mes fin ?
+emprestimos.parcelas nid
+emprestimos.status nid
+emprestimos.motivo_recusa fin ?
+emprestimos.created_at nid
+
+dispositivos.id nid
+dispositivos.user_id nid
+dispositivos.device_id out
+dispositivos.modelo nid
+dispositivos.ultimo_ip loc
+dispositivos.push_token nid ?
+dispositivos.created_at nid
+
+audit_log.id nid
+audit_log.user_id nid
+audit_log.evento nid
+audit_log.ip loc
+audit_log.payload out ?
+audit_log.created_at nid
+@achado PESSOAL_EM_LOG audit_log
+
+parceiros.id nid
+parceiros.razao_social nid
+parceiros.cnpj idd ?
+parceiros.email_comercial nid
+parceiros.taxa_percentual nid

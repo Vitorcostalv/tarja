@@ -1,0 +1,94 @@
+# Gabarito: escola (desenvolvimento). Ver corpus/GABARITO.md.
+
+turmas.id nid
+turmas.serie nid
+turmas.nome nid
+turmas.turno nid
+turmas.ano_letivo nid
+
+alunos.id nid
+alunos.matricula idd
+alunos.nome idd
+alunos.data_nascimento out
+alunos.cpf idd
+alunos.certidao_nascimento idd
+alunos.nome_mae idd
+alunos.nome_pai idd
+alunos.nome_responsavel cri
+alunos.telefone_responsavel cri
+alunos.cor_raca sen:racial
+alunos.religiao sen:religiao
+alunos.necessidade_especial sen:saude
+alunos.alergia_alimentar sen:saude
+alunos.endereco loc
+alunos.bairro loc
+alunos.cep loc
+alunos.foto_url out
+alunos.turma_id nid
+alunos.ativo nid
+alunos.criado_em nid
+@achado INDICIO_MENOR alunos
+@achado SENSIVEL_SEM_PROTECAO alunos.cor_raca
+@achado SENSIVEL_SEM_PROTECAO alunos.religiao
+@achado SENSIVEL_SEM_PROTECAO alunos.necessidade_especial
+@achado SENSIVEL_SEM_PROTECAO alunos.alergia_alimentar
+
+responsaveis.id nid
+responsaveis.aluno_id nid
+responsaveis.nome idd
+responsaveis.parentesco out
+responsaveis.cpf idd
+responsaveis.rg idd
+responsaveis.telefone idd
+responsaveis.email idd
+responsaveis.profissao out
+responsaveis.renda_familiar fin
+responsaveis.responsavel_financeiro nid
+@achado SEM_CICLO_DE_VIDA responsaveis
+
+professores.id nid
+professores.nome idd
+professores.cpf idd
+professores.email idd
+professores.formacao out
+professores.data_admissao out
+professores.criado_em nid
+
+notas.id nid
+notas.aluno_id nid
+notas.disciplina nid
+notas.bimestre nid
+notas.nota out ?
+notas.lancado_em nid
+
+ocorrencias.id nid
+ocorrencias.aluno_id nid
+ocorrencias.professor_id nid
+ocorrencias.data_ocorrencia nid
+ocorrencias.tipo nid
+ocorrencias.descricao out ?
+ocorrencias.providencias out ?
+ocorrencias.criado_em nid
+
+bolsas.id nid
+bolsas.aluno_id nid
+bolsas.percentual nid
+bolsas.renda_per_capita fin
+bolsas.comprovante_url fin
+bolsas.vigencia_fim nid
+@achado SEM_CICLO_DE_VIDA bolsas
+
+usuarios_portal.id nid
+usuarios_portal.login idd
+usuarios_portal.senha_hash nid ?
+usuarios_portal.email idd
+usuarios_portal.perfil nid
+usuarios_portal.ultimo_acesso nid
+usuarios_portal.criado_em nid
+
+log_portal.id nid
+log_portal.usuario_id nid
+log_portal.ip loc
+log_portal.acao nid
+log_portal.criado_em nid
+@achado PESSOAL_EM_LOG log_portal

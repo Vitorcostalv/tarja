@@ -1,0 +1,103 @@
+# Gabarito: rh (desenvolvimento). Ver corpus/GABARITO.md.
+
+departamentos.id nid
+departamentos.nome nid
+departamentos.centro_custo nid
+
+cargos.id nid
+cargos.titulo nid
+cargos.faixa_salarial_min nid
+cargos.faixa_salarial_max nid
+
+funcionarios.id nid
+funcionarios.matricula idd
+funcionarios.nome idd
+funcionarios.nome_mae idd
+funcionarios.cpf idd
+funcionarios.rg idd
+funcionarios.pis idd
+funcionarios.ctps_numero idd
+funcionarios.titulo_eleitor idd
+funcionarios.data_nascimento out
+funcionarios.genero out
+funcionarios.estado_civil out
+funcionarios.nacionalidade out
+funcionarios.email_pessoal idd
+funcionarios.email_corporativo idd
+funcionarios.celular idd
+funcionarios.departamento_id nid
+funcionarios.cargo_id nid
+funcionarios.data_admissao out
+funcionarios.data_demissao out
+funcionarios.salario fin
+funcionarios.banco fin
+funcionarios.agencia fin
+funcionarios.conta_bancaria fin
+funcionarios.pcd sen:saude
+funcionarios.tipo_deficiencia sen:saude
+funcionarios.filiado_sindicato sen:sindical
+funcionarios.foto_url out
+funcionarios.created_at nid
+@achado SENSIVEL_SEM_PROTECAO funcionarios.pcd
+@achado SENSIVEL_SEM_PROTECAO funcionarios.tipo_deficiencia
+@achado SENSIVEL_SEM_PROTECAO funcionarios.filiado_sindicato
+
+dependentes.id nid
+dependentes.funcionario_id nid
+dependentes.nome idd
+dependentes.cpf idd
+dependentes.data_nascimento out
+dependentes.parentesco out
+@achado SEM_CICLO_DE_VIDA dependentes
+
+folha_pagamento.id nid
+folha_pagamento.funcionario_id nid
+folha_pagamento.competencia nid
+folha_pagamento.salario_bruto fin
+folha_pagamento.descontos fin
+folha_pagamento.salario_liquido fin
+folha_pagamento.pensao_alimenticia fin
+folha_pagamento.created_at nid
+
+ponto_registros.id nid
+ponto_registros.funcionario_id nid
+ponto_registros.registrado_em out ?
+ponto_registros.tipo nid
+ponto_registros.latitude loc
+ponto_registros.longitude loc
+ponto_registros.digital_hash sen:biometrico
+
+atestados_medicos.id nid
+atestados_medicos.funcionario_id nid
+atestados_medicos.cid sen:saude
+atestados_medicos.dias_afastamento sen:saude
+atestados_medicos.inicio nid
+atestados_medicos.arquivo_url sen:saude
+atestados_medicos.observacao sen:saude ?
+atestados_medicos.created_at nid
+@achado SENSIVEL_SEM_PROTECAO atestados_medicos.cid
+@achado SENSIVEL_SEM_PROTECAO atestados_medicos.dias_afastamento
+@achado SENSIVEL_SEM_PROTECAO atestados_medicos.arquivo_url
+@achado SENSIVEL_SEM_PROTECAO atestados_medicos.observacao
+@achado TEXTO_LIVRE atestados_medicos.observacao
+
+candidatos.id nid
+candidatos.vaga_id nid
+candidatos.nome idd
+candidatos.email idd
+candidatos.telefone idd
+candidatos.curriculo_texto out
+candidatos.pretensao_salarial fin
+candidatos.linkedin_url idd
+candidatos.religiao sen:religiao
+candidatos.orientacao_politica sen:politica
+candidatos.criado_em nid
+@achado SENSIVEL_SEM_PROTECAO candidatos.religiao
+@achado SENSIVEL_SEM_PROTECAO candidatos.orientacao_politica
+
+historico_login.id nid
+historico_login.funcionario_id nid
+historico_login.ip loc
+historico_login.sucesso nid
+historico_login.tentativa_em nid
+@achado PESSOAL_EM_LOG historico_login

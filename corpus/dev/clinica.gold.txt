@@ -1,0 +1,117 @@
+# Gabarito: clinica (desenvolvimento). Ver corpus/GABARITO.md.
+
+pacientes.id nid
+pacientes.nome_completo idd
+pacientes.cpf idd
+pacientes.rg idd
+pacientes.data_nascimento out
+pacientes.sexo out
+pacientes.cor_raca sen:racial
+pacientes.estado_civil out
+pacientes.email idd
+pacientes.celular idd
+pacientes.telefone_emergencia idd
+pacientes.nome_responsavel cri
+pacientes.plano_saude sen:saude ?
+pacientes.numero_carteirinha sen:saude ?
+pacientes.tipo_sanguineo sen:saude
+pacientes.alergias sen:saude
+pacientes.observacoes out ?
+pacientes.criado_em nid
+pacientes.deleted_at nid
+@achado TEXTO_LIVRE pacientes.observacoes
+@achado SENSIVEL_SEM_PROTECAO pacientes.cor_raca
+@achado SENSIVEL_SEM_PROTECAO pacientes.plano_saude
+@achado SENSIVEL_SEM_PROTECAO pacientes.numero_carteirinha
+@achado SENSIVEL_SEM_PROTECAO pacientes.tipo_sanguineo
+@achado SENSIVEL_SEM_PROTECAO pacientes.alergias
+@achado INDICIO_MENOR pacientes
+
+enderecos_pacientes.id nid
+enderecos_pacientes.paciente_id nid
+enderecos_pacientes.rua loc
+enderecos_pacientes.numero loc
+enderecos_pacientes.bairro loc
+enderecos_pacientes.cidade loc
+enderecos_pacientes.estado loc
+enderecos_pacientes.cep loc
+@achado SEM_CICLO_DE_VIDA enderecos_pacientes
+
+medicos.id nid
+medicos.nome idd
+medicos.crm idd
+medicos.especialidade out
+medicos.email_profissional idd
+medicos.ativo nid
+@achado SEM_CICLO_DE_VIDA medicos
+
+consultas.id nid
+consultas.paciente_id nid
+consultas.medico_id nid
+consultas.data_hora nid
+consultas.tipo nid
+consultas.queixa_principal sen:saude
+consultas.diagnostico sen:saude
+consultas.cid10 sen:saude
+consultas.conduta sen:saude
+consultas.retorno_em nid
+consultas.valor_cobrado fin ?
+consultas.criado_em nid
+@achado SENSIVEL_SEM_PROTECAO consultas.queixa_principal
+@achado SENSIVEL_SEM_PROTECAO consultas.diagnostico
+@achado SENSIVEL_SEM_PROTECAO consultas.cid10
+@achado SENSIVEL_SEM_PROTECAO consultas.conduta
+
+prescricoes.id nid
+prescricoes.consulta_id nid
+prescricoes.medicamento sen:saude
+prescricoes.dosagem sen:saude
+prescricoes.posologia sen:saude
+prescricoes.duracao_dias nid
+@achado SENSIVEL_SEM_PROTECAO prescricoes.medicamento
+@achado SENSIVEL_SEM_PROTECAO prescricoes.dosagem
+@achado SENSIVEL_SEM_PROTECAO prescricoes.posologia
+@achado SEM_CICLO_DE_VIDA prescricoes
+
+exames.id nid
+exames.paciente_id nid
+exames.tipo_exame sen:saude
+exames.resultado sen:saude
+exames.laudo_pdf_url sen:saude
+exames.coletado_em nid
+exames.criado_em nid
+@achado SENSIVEL_SEM_PROTECAO exames.tipo_exame
+@achado SENSIVEL_SEM_PROTECAO exames.resultado
+@achado SENSIVEL_SEM_PROTECAO exames.laudo_pdf_url
+
+prontuarios_genetica.id nid
+prontuarios_genetica.paciente_id nid
+prontuarios_genetica.resultado_dna sen:genetico
+prontuarios_genetica.marcadores_geneticos sen:genetico
+prontuarios_genetica.laboratorio nid
+prontuarios_genetica.criado_em nid
+@achado SENSIVEL_SEM_PROTECAO prontuarios_genetica.resultado_dna
+@achado SENSIVEL_SEM_PROTECAO prontuarios_genetica.marcadores_geneticos
+
+agendamentos.id nid
+agendamentos.paciente_id nid
+agendamentos.medico_id nid
+agendamentos.inicio nid
+agendamentos.fim nid
+agendamentos.status nid
+agendamentos.canal nid
+agendamentos.criado_em nid
+
+auditoria_prontuario.id nid
+auditoria_prontuario.usuario_email idd
+auditoria_prontuario.paciente_id nid
+auditoria_prontuario.acao nid
+auditoria_prontuario.ip_origem loc
+auditoria_prontuario.ocorreu_em nid
+@achado PESSOAL_EM_LOG auditoria_prontuario
+
+unidades.id nid
+unidades.nome nid
+unidades.endereco nid
+unidades.cnpj idd ?
+unidades.telefone nid
