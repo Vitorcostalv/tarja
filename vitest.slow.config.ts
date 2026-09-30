@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 // Suíte lenta: corpus completo, entrada de 1 MB, propriedades pesadas e cobertura com limite mínimo.
 export default defineConfig({
   test: {
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
     environment: "node",
     testTimeout: 60_000,
     coverage: {

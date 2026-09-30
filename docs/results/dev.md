@@ -63,13 +63,13 @@ Nenhum.
 ### Colunas com "depende" no gabarito (fora das métricas) (24)
 
 - `clinica` · `consultas.valor_cobrado`: gabarito **financeiro**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `clinica` · `pacientes.numero_carteirinha`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (baixa). o nome da coluna contém "possível dado de saúde"
+- `clinica` · `pacientes.numero_carteirinha`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (baixa). o nome da coluna contém "carteirinha" (possível dado de saúde)
 - `clinica` · `pacientes.observacoes`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "pacientes" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
-- `clinica` · `pacientes.plano_saude`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (alta). o nome da coluna é "saúde"
+- `clinica` · `pacientes.plano_saude`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (alta). o nome da coluna é "plano saude" (saúde)
 - `clinica` · `unidades.cnpj`: gabarito **identificador_direto**, a Tarja disse **identificador_direto** (media). o nome da coluna é "CNPJ"
 - `ecommerce` · `avaliacoes.comentario`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `ecommerce` · `clientes.senha_hash`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `ecommerce` · `logs_acesso.user_agent`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (alta). o nome da coluna é "identificador de dispositivo"
+- `ecommerce` · `logs_acesso.user_agent`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (alta). o nome da coluna é "user agent" (identificador de dispositivo)
 - `ecommerce` · `pedidos.observacao`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `escola` · `notas.nota`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `escola` · `ocorrencias.descricao`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal

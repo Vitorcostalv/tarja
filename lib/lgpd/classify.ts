@@ -152,16 +152,19 @@ function avaliarRegra(
 
     const sinais: SinalMotivo[] = [];
     let pontos = regra.peso;
+    // Mostra a palavra que casou e, se ela não é o próprio rótulo, o que ela significa: contém "sanguineo" (saúde).
+    const palavra = padrao.join(" ");
+    const citado = palavra === regra.rotulo.toLowerCase() ? `"${regra.rotulo}"` : `"${palavra}" (${regra.rotulo})`;
     if (exato) {
       pontos += 2;
-      sinais.push({ tipo: "nome", texto: `o nome da coluna é "${regra.rotulo}"` });
+      sinais.push({ tipo: "nome", texto: `o nome da coluna é ${citado}` });
     } else if (parcial) {
       pontos += 1;
-      sinais.push({ tipo: "nome", texto: `o nome da coluna contém "${regra.rotulo}"` });
+      sinais.push({ tipo: "nome", texto: `o nome da coluna contém ${citado}` });
     }
     if (noComentario) {
       pontos += 2;
-      sinais.push({ tipo: "comentario", texto: `o COMMENT da coluna cita "${regra.rotulo}"` });
+      sinais.push({ tipo: "comentario", texto: `o COMMENT da coluna cita ${citado}` });
     }
     if (padrao.length > 1) pontos += 1;
     if (regra.tipos) {

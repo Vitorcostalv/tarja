@@ -69,3 +69,9 @@ Execuções registradas em `docs/validation-runs-v2.md` (commit do motor da roda
 - Nomes grudados ou abreviados fora do dicionário (`fname`, `lname`, `guardiansname`, `ethnoracial`, `drivers_license`, `DOB`): o tokenizador não separa palavras minúsculas coladas.
 - Saúde e raça de **animal** (`pets.raca`, `atendimentos.diagnostico`) e "tutor" como dono do pet: armadilhas de propósito do v2, todas erradas. A Tarja não distingue humano de animal.
 - Coluna de dado de saúde sem a palavra de saúde (`prescriptions.drug`, `dosage`, `payroll_items.bruto/inss/irrf/liquido`, `contas.numero`): o contexto da tabela de saúde só cobre algumas palavras.
+
+## Depois das execuções v2: só texto e interface (nenhuma pontuação mudou)
+
+- O **motivo** passou a nomear a palavra que casou: `o nome da coluna contém "sanguineo" (saúde)` em vez de só `"saúde"`. Não mexe em pontuação nem em classificação; os números v2 continuam valendo.
+- A revisão "sem pista" ignora chave, data de sistema, credencial, estado e booleano (`colunaDeSistema`). Só muda a lista mostrada, não a classificação.
+- Interface, CSP, worker, 404 e OG estática.
