@@ -50,3 +50,22 @@ Ordem do que aconteceu: (1) validação v1 e externo v1 declarados corpora de de
 | 3.6 | Notas: foto é dado pessoal comum (biometria só com indício de uso para identificar, por nome ou COMMENT); gênero é pessoal e a nota diz que orientação e vida sexual são sensíveis. | Decisão do revisor. |
 | 3.7 | "Não identificado" passou a se chamar "Não identificado pelas regras" em tela e relatório; o relatório avisa quantas colunas ficaram sem regra. | Decisão do revisor. |
 | 3.8 | Palavras de evento de sistema (`registered`, `activated`, `approved`...) ficam fora do contexto da tabela. | Corrige falsos positivos da 3.3 vistos no externo v1 (desenvolvimento). |
+
+## Resultado da única execução dos corpora v2 e o que mudou depois
+
+Execuções registradas em `docs/validation-runs-v2.md` (commit do motor da rodada 3). Resultados completos em `docs/results/validation-v2.md` e `docs/results/external-v2.md`.
+
+| Corpus v2 | Colunas avaliadas | Precisão binária | Recall binário | FN | FP |
+|---|---:|---:|---:|---:|---:|
+| Validação v2 (schemas fictícios meus, gabarito antes das regras) | 239 | 87% | 94% | 6 | 16 |
+| Externo v2 (Northwind, Chinook, OpenEMR; não escrevi) | 377 | 73% | 90% | 14 | 49 |
+
+**Única mudança feita DEPOIS de ver os resultados v2:** o achado `SEM_CICLO_DE_VIDA` foi rebaixado a "informativo". A precisão dele no externo v2 foi 57%, abaixo do mínimo de 60% definido pelo revisor (na validação v2 foi 50%, com 2 ocorrências). Regra do revisor, aplicada como combinado; nenhuma regra de classificação foi tocada.
+
+**O que NÃO foi corrigido, de propósito** (corrigir olhando para os v2 queimaria os dois, e o revisor decide):
+
+- `suppliers` (Northwind) e qualquer tabela de fornecedor/empresa: a tabela cai em "coisa", e `first_name`, `last_name`, e-mail e telefone da pessoa de contato passam sem marcar (6 dos 14 falsos negativos do externo v2).
+- Nome genérico (`Name`, `status_name`, `privilege_name`) em tabela sem contexto de pessoa vira "identificador direto, confiança baixa" (9 dos 49 falsos positivos do externo v2).
+- Nomes grudados ou abreviados fora do dicionário (`fname`, `lname`, `guardiansname`, `ethnoracial`, `drivers_license`, `DOB`): o tokenizador não separa palavras minúsculas coladas.
+- Saúde e raça de **animal** (`pets.raca`, `atendimentos.diagnostico`) e "tutor" como dono do pet: armadilhas de propósito do v2, todas erradas. A Tarja não distingue humano de animal.
+- Coluna de dado de saúde sem a palavra de saúde (`prescriptions.drug`, `dosage`, `payroll_items.bruto/inss/irrf/liquido`, `contas.numero`): o contexto da tabela de saúde só cobre algumas palavras.

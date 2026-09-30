@@ -16,7 +16,7 @@ export type ResultadoImportacao = { ok: true; relatorio: Relatorio } | { ok: fal
 
 const PESSOAL: readonly string[] = ["sim", "nao", "depende"];
 const CONFIANCA: readonly string[] = ["alta", "media", "baixa"];
-const GRAVIDADE: readonly string[] = ["alta", "media", "baixa"];
+const GRAVIDADE: readonly string[] = ["alta", "media", "baixa", "informativo"];
 
 function ehObjeto(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null && !Array.isArray(x);
@@ -138,7 +138,7 @@ export function escMd(valor: string): string {
 
 const ROTULO_PESSOAL: Record<Pessoal, string> = { sim: "sim", nao: "não", depende: "depende" };
 const ROTULO_CONFIANCA: Record<Confianca, string> = { alta: "alta", media: "média", baixa: "baixa" };
-const ROTULO_GRAVIDADE: Record<Gravidade, string> = { alta: "alta", media: "média", baixa: "baixa" };
+const ROTULO_GRAVIDADE: Record<Gravidade, string> = { alta: "alta", media: "média", baixa: "baixa", informativo: "informativo" };
 
 export function paraMarkdown(r: Relatorio): string {
   const s = resumir(r);

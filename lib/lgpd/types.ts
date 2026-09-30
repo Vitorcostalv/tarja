@@ -98,7 +98,8 @@ export interface ClassificacaoColuna {
   origem: "regra" | "manual";
 }
 
-export type Gravidade = "alta" | "media" | "baixa";
+/** "informativo": o critério erra com frequência medida; é uma dica, não um problema. */
+export type Gravidade = "alta" | "media" | "baixa" | "informativo";
 
 export interface Achado {
   id: string;

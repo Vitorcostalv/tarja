@@ -31,7 +31,7 @@ function tokensDaTabela(nome: string): string[] {
 }
 
 function compara(a: Achado, b: Achado): number {
-  const ordem: Record<Gravidade, number> = { alta: 0, media: 1, baixa: 2 };
+  const ordem: Record<Gravidade, number> = { alta: 0, media: 1, baixa: 2, informativo: 3 };
   return (
     ordem[a.gravidade] - ordem[b.gravidade] ||
     a.id.localeCompare(b.id) ||
@@ -78,12 +78,14 @@ export function gerarAchados(
     if (!temData && !logComTempo) {
       achados.push({
         id: "SEM_CICLO_DE_VIDA",
-        gravidade: temSensivel ? "alta" : "media",
+        // Rebaixado a informativo: a precisão medida no corpus externo v2 (uma única execução) ficou em 57%, abaixo
+        // do mínimo de 60% que definimos. Ver docs/results/historico-de-ajustes.md.
+        gravidade: "informativo",
         tabela: tabela.name,
         coluna: null,
-        titulo: "Dado pessoal sem data de criação nem exclusão lógica",
+        titulo: "Informativo: dado pessoal sem data de criação nem exclusão lógica",
         explicacao:
-          "A tabela guarda dado pessoal mas não tem coluna que diga quando o registro foi criado, nem marca de exclusão (deleted_at). Sem isso fica difícil aplicar prazo de retenção e eliminar o dado quando a finalidade acabar. Um booleano \"ativo\" não conta: ele pode ser só status.",
+          "A tabela guarda dado pessoal mas não tem coluna que diga quando o registro foi criado, nem marca de exclusão (deleted_at). Sem isso fica difícil aplicar prazo de retenção e eliminar o dado quando a finalidade acabar. Um booleano \"ativo\" não conta: ele pode ser só status. Este achado é só informativo: a regra errou mais de 4 em cada 10 vezes na medição (as datas podem ter outro nome, como create_date ou last_update).",
         fontes: ["LGPD-15", "LGPD-16"],
       });
     }

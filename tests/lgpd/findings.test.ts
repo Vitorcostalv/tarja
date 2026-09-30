@@ -25,11 +25,12 @@ describe("achado SEM_CICLO_DE_VIDA", () => {
   it("em tabela de log, qualquer coluna de data serve", () => {
     expect(ids("CREATE TABLE log_acesso (id INT, ip VARCHAR(45), dt_evento DATETIME);")).not.toContain("SEM_CICLO_DE_VIDA");
   });
-  it("tem gravidade, explicação e fonte", () => {
-    const a = achados("CREATE TABLE clientes (nome VARCHAR(50));")[0]!;
+  it("tem gravidade, explicação e fonte, e é só informativo (a precisão medida foi de 57%)", () => {
+    const a = achados("CREATE TABLE clientes (nome VARCHAR(50), cpf CHAR(11));").find((x) => x.id === "SEM_CICLO_DE_VIDA")!;
     expect(a.explicacao.length).toBeGreaterThan(40);
     expect(a.fontes).toEqual(expect.arrayContaining(["LGPD-16"]));
-    expect(["alta", "media", "baixa"]).toContain(a.gravidade);
+    expect(a.gravidade).toBe("informativo");
+    expect(a.titulo).toMatch(/^Informativo:/);
   });
 });
 
@@ -104,7 +105,7 @@ describe("achados: ordem estável", () => {
     const a = achados(`
       CREATE TABLE pacientes (diagnostico TEXT, alergia TEXT, nome VARCHAR(50));
       CREATE TABLE clientes (nome VARCHAR(50));`);
-    const ordem = { alta: 0, media: 1, baixa: 2 };
+    const ordem = { alta: 0, media: 1, baixa: 2, informativo: 3 };
     for (let i = 1; i < a.length; i++) {
       expect(ordem[a[i - 1]!.gravidade]).toBeLessThanOrEqual(ordem[a[i]!.gravidade]);
     }
