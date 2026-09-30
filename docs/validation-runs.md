@@ -1,0 +1,7 @@
+# Execuções do corpus de validação
+
+Este corpus é congelado: não se ajusta regra olhando para ele. Cada execução é registrada aqui.
+
+| # | Data | Commit | Recall binário | Precisão binária | FN de dado pessoal |
+|---:|---|---|---:|---:|---:|
+| 1 | 2026-09-30 | 2b6b3ac | 99% | 100% | 1 |
