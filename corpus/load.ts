@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /** Categorias do gabarito (corpus/GABARITO.md). */
@@ -81,15 +81,24 @@ export function parseGold(text: string, source = "gabarito"): Gold {
   return { columns, findings };
 }
 
-/** Carrega todos os pares NOME.sql + NOME.gold.txt de uma pasta do corpus. */
+/**
+ * Carrega os pares NOME.gold.txt + NOME.sql de uma pasta do corpus.
+ * Schemas de licença copyleft não ficam no repositório: o SQL vem de `.fetched/NOME.sql`,
+ * baixado por `npm run corpus:fetch`.
+ */
 export function loadCorpus(dir: string): CorpusSchema[] {
   return readdirSync(dir)
-    .filter((f) => f.endsWith(".sql"))
+    .filter((f) => f.endsWith(".gold.txt"))
     .sort()
     .map((f) => {
-      const name = f.replace(/\.sql$/, "");
-      const sql = readFileSync(join(dir, f), "utf8");
-      const goldFile = join(dir, `${name}.gold.txt`);
-      return { name, sql, gold: parseGold(readFileSync(goldFile, "utf8"), goldFile) };
+      const name = f.replace(/\.gold\.txt$/, "");
+      const local = join(dir, `${name}.sql`);
+      const baixado = join(dir, ".fetched", `${name}.sql`);
+      const arquivo = existsSync(local) ? local : baixado;
+      if (!existsSync(arquivo)) {
+        throw new Error(`Falta o SQL de "${name}" em ${dir}. Rode "npm run corpus:fetch" para baixar os schemas de licença copyleft.`);
+      }
+      const goldFile = join(dir, f);
+      return { name, sql: readFileSync(arquivo, "utf8"), gold: parseGold(readFileSync(goldFile, "utf8"), goldFile) };
     });
 }

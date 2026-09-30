@@ -2,16 +2,16 @@ import { describe, expect, it } from "vitest";
 import { loadCorpus } from "../corpus/load";
 import { parseDdl } from "../lib/sql/parser";
 
-/**
+/** Schemas externos: parte deles é baixada por `npm run corpus:fetch` (licença copyleft). 
  * Confere só a consistência entre os .sql e os gabaritos (nenhuma coluna sem gabarito,
  * nenhum gabarito sem coluna). Não usa o classificador.
  */
-for (const corpus of ["dev", "validation", "validation-v2"] as const) {
+for (const corpus of ["external", "external-v2"] as const) {
   describe(`corpus ${corpus}: gabarito x DDL`, () => {
     const schemas = loadCorpus(`corpus/${corpus}`);
 
     it("existem os schemas esperados", () => {
-      expect(schemas.length).toBe(5);
+      expect(schemas.length).toBe({ external: 3, "external-v2": 3 }[corpus]);
     });
 
     for (const s of schemas) {

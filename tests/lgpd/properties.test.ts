@@ -5,7 +5,8 @@ import { analisar, analisarDdl } from "../../lib/lgpd/analyze";
 import { parseDdl } from "../../lib/sql/parser";
 import type { ParseResult, ParsedTable } from "../../lib/sql/types";
 
-const CORPUS = [...loadCorpus("corpus/dev"), ...loadCorpus("corpus/validation"), ...loadCorpus("corpus/external")];
+// Só corpora que estão inteiros no repositório (o externo depende de `npm run corpus:fetch`).
+const CORPUS = [...loadCorpus("corpus/dev"), ...loadCorpus("corpus/validation"), ...loadCorpus("corpus/validation-v2")];
 const TABELAS: ParsedTable[] = CORPUS.flatMap((s) => parseDdl(s.sql).tables);
 
 const VALID = `CREATE TABLE \`clientes\` (id INT, nome VARCHAR(100) COMMENT 'nome, completo', cpf CHAR(14), obs TEXT);

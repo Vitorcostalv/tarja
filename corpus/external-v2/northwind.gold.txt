@@ -1,0 +1,208 @@
+# Gabarito: northwind (EXTERNO v2, terceiros, BSD-3). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+# Customers, suppliers e shippers são empresas com pessoa de contato: endereço e telefone comercial ficam com ?.
+
+customers.id nid
+customers.company nid ?
+customers.web_page nid ?
+customers.attachments nid ?
+customers.last_name idd
+customers.first_name idd
+customers.email_address idd
+customers.home_phone idd
+customers.mobile_phone idd
+customers.business_phone idd ?
+customers.fax_number idd ?
+customers.job_title out
+customers.address loc ?
+customers.city loc ?
+customers.state_province loc ?
+customers.zip_postal_code loc ?
+customers.country_region loc ?
+customers.notes out ?
+
+employees.id nid
+employees.company nid
+employees.web_page nid
+employees.attachments nid
+employees.last_name idd
+employees.first_name idd
+employees.email_address idd
+employees.business_phone idd
+employees.home_phone idd
+employees.mobile_phone idd
+employees.fax_number idd ?
+employees.job_title out
+employees.address loc
+employees.city loc
+employees.state_province loc
+employees.zip_postal_code loc
+employees.country_region loc
+employees.notes out ?
+
+privileges.id nid
+privileges.privilege_name nid
+
+employee_privileges.employee_id nid
+employee_privileges.privilege_id nid
+
+inventory_transaction_types.id nid
+inventory_transaction_types.type_name nid
+
+shippers.id nid
+shippers.company nid ?
+shippers.web_page nid ?
+shippers.attachments nid ?
+shippers.last_name idd
+shippers.first_name idd
+shippers.email_address idd
+shippers.home_phone idd
+shippers.mobile_phone idd
+shippers.business_phone idd ?
+shippers.fax_number idd ?
+shippers.job_title out
+shippers.address loc ?
+shippers.city loc ?
+shippers.state_province loc ?
+shippers.zip_postal_code loc ?
+shippers.country_region loc ?
+shippers.notes out ?
+
+orders_tax_status.id nid
+orders_tax_status.tax_status_name nid
+
+orders_status.id nid
+orders_status.status_name nid
+
+orders.id nid
+orders.employee_id nid
+orders.customer_id nid
+orders.order_date nid
+orders.shipped_date nid
+orders.shipper_id nid
+orders.shipping_fee nid
+orders.taxes nid
+orders.payment_type nid
+orders.paid_date nid
+orders.tax_rate nid
+orders.tax_status_id nid
+orders.status_id nid
+orders.ship_name idd ?
+orders.ship_address loc ?
+orders.ship_city loc ?
+orders.ship_state_province loc ?
+orders.ship_zip_postal_code loc ?
+orders.ship_country_region loc ?
+orders.notes nid ?
+
+products.supplier_ids nid
+products.id nid
+products.product_code nid
+products.product_name nid
+products.description nid
+products.standard_cost nid
+products.list_price nid
+products.reorder_level nid
+products.target_level nid
+products.quantity_per_unit nid
+products.discontinued nid
+products.minimum_reorder_quantity nid
+products.category nid
+products.attachments nid
+
+purchase_order_status.id nid
+purchase_order_status.status nid
+
+suppliers.id nid
+suppliers.company nid ?
+suppliers.web_page nid ?
+suppliers.attachments nid ?
+suppliers.last_name idd
+suppliers.first_name idd
+suppliers.email_address idd
+suppliers.home_phone idd
+suppliers.mobile_phone idd
+suppliers.business_phone idd ?
+suppliers.fax_number idd ?
+suppliers.job_title out
+suppliers.address loc ?
+suppliers.city loc ?
+suppliers.state_province loc ?
+suppliers.zip_postal_code loc ?
+suppliers.country_region loc ?
+suppliers.notes out ?
+
+purchase_orders.id nid
+purchase_orders.supplier_id nid
+purchase_orders.created_by nid
+purchase_orders.submitted_date nid
+purchase_orders.creation_date nid
+purchase_orders.status_id nid
+purchase_orders.expected_date nid
+purchase_orders.shipping_fee nid
+purchase_orders.taxes nid
+purchase_orders.payment_date nid
+purchase_orders.payment_amount nid
+purchase_orders.payment_method nid
+purchase_orders.approved_by nid
+purchase_orders.approved_date nid
+purchase_orders.submitted_by nid
+purchase_orders.notes nid ?
+
+inventory_transactions.id nid
+inventory_transactions.transaction_type nid
+inventory_transactions.transaction_created_date nid
+inventory_transactions.transaction_modified_date nid
+inventory_transactions.product_id nid
+inventory_transactions.quantity nid
+inventory_transactions.purchase_order_id nid
+inventory_transactions.customer_order_id nid
+inventory_transactions.comments nid ?
+
+invoices.id nid
+invoices.order_id nid
+invoices.invoice_date nid
+invoices.due_date nid
+invoices.tax nid
+invoices.shipping nid
+invoices.amount_due nid
+
+order_details_status.id nid
+order_details_status.status_name nid
+
+order_details.id nid
+order_details.order_id nid
+order_details.product_id nid
+order_details.quantity nid
+order_details.unit_price nid
+order_details.discount nid
+order_details.status_id nid
+order_details.date_allocated nid
+order_details.purchase_order_id nid
+order_details.inventory_id nid
+
+purchase_order_details.id nid
+purchase_order_details.purchase_order_id nid
+purchase_order_details.product_id nid
+purchase_order_details.quantity nid
+purchase_order_details.unit_cost nid
+purchase_order_details.date_received nid
+purchase_order_details.posted_to_inventory nid
+purchase_order_details.inventory_id nid
+
+sales_reports.group_by nid
+sales_reports.display nid
+sales_reports.title nid
+sales_reports.filter_row_source nid
+sales_reports.default nid
+
+strings.string_id nid
+strings.string_data nid
+
+@achado SEM_CICLO_DE_VIDA customers
+@achado TEXTO_LIVRE customers.notes
+@achado SEM_CICLO_DE_VIDA employees
+@achado TEXTO_LIVRE employees.notes
+@achado SEM_CICLO_DE_VIDA shippers
+@achado TEXTO_LIVRE shippers.notes
+@achado SEM_CICLO_DE_VIDA suppliers
+@achado TEXTO_LIVRE suppliers.notes

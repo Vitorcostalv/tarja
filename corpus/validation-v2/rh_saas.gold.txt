@@ -1,0 +1,73 @@
+# Gabarito: rh_saas (VALIDAÇÃO v2, congelado). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+companies.id nid
+companies.razao_social nid
+companies.plano nid
+companies.cnpj idd ?
+
+employees.id nid
+employees.company_id nid
+employees.created_at nid
+employees.nome idd
+employees.cpf idd
+employees.pis idd
+employees.email_corporativo idd
+employees.email_pessoal idd
+employees.telefone idd
+employees.data_nascimento out
+employees.genero out
+employees.admitido_em out
+employees.demitido_em out
+employees.foto_url out
+employees.raca_cor_ibge sen:racial
+employees.pcd sen:saude
+employees.tipo_deficiencia sen:saude
+employees.religiao sen:religiao
+employees.salario_base fin
+employees.banco fin
+employees.agencia fin
+employees.conta fin
+employees.pix_key fin
+
+vacancies.id nid
+vacancies.company_id nid
+vacancies.titulo nid
+vacancies.descricao nid
+vacancies.faixa_min nid
+vacancies.faixa_max nid
+
+applicants.id nid
+applicants.vacancy_id nid
+applicants.created_at nid
+applicants.nome idd
+applicants.email idd
+applicants.telefone idd
+applicants.linkedin idd
+applicants.curriculo_url out
+applicants.genero out
+applicants.pretensao fin
+applicants.raca_cor sen:racial
+
+payroll_items.id nid
+payroll_items.employee_id nid
+payroll_items.competencia nid
+payroll_items.created_at nid
+payroll_items.bruto fin
+payroll_items.liquido fin
+payroll_items.inss fin
+payroll_items.irrf fin
+payroll_items.pensao_alimenticia fin
+
+audit_trail.id nid
+audit_trail.action nid
+audit_trail.target_table nid
+audit_trail.created_at nid
+audit_trail.actor_email idd
+audit_trail.ip loc
+
+@achado SENSIVEL_SEM_PROTECAO employees.raca_cor_ibge
+@achado SENSIVEL_SEM_PROTECAO employees.pcd
+@achado SENSIVEL_SEM_PROTECAO employees.tipo_deficiencia
+@achado SENSIVEL_SEM_PROTECAO employees.religiao
+@achado SENSIVEL_SEM_PROTECAO applicants.raca_cor
+@achado PESSOAL_EM_LOG audit_trail

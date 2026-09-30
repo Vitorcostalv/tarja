@@ -1,0 +1,49 @@
+# Gabarito: ead (VALIDAÇÃO v2, congelado). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+alunos.id nid
+alunos.created_at nid
+alunos.nome idd
+alunos.cpf idd
+alunos.email idd
+alunos.telefone idd
+alunos.nascimento out
+alunos.cidade loc
+alunos.uf loc
+alunos.is_menor cri
+alunos.responsavel_nome cri
+alunos.responsavel_cpf cri
+alunos.responsavel_email cri
+
+cursos.id nid
+cursos.titulo nid
+cursos.carga_horaria nid
+cursos.preco nid
+
+matriculas.id nid
+matriculas.aluno_id nid
+matriculas.curso_id nid
+matriculas.inicio nid
+matriculas.progresso out ?
+matriculas.nota_final out ?
+
+certificados.id nid
+certificados.matricula_id nid
+certificados.codigo_validacao nid
+certificados.emitido_em nid
+certificados.pdf_url nid ?
+
+tickets_suporte.id nid
+tickets_suporte.aluno_id nid
+tickets_suporte.criado_em nid
+tickets_suporte.assunto nid ?
+tickets_suporte.mensagem nid ?
+
+log_visualizacao.id nid
+log_visualizacao.aluno_id nid
+log_visualizacao.aula_id nid
+log_visualizacao.assistido_em nid
+log_visualizacao.ip loc
+log_visualizacao.dispositivo out ?
+
+@achado INDICIO_MENOR alunos
+@achado PESSOAL_EM_LOG log_visualizacao

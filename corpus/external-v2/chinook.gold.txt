@@ -1,0 +1,78 @@
+# Gabarito: chinook (EXTERNO v2, terceiros, MIT). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+Album.AlbumId nid
+Album.Title nid
+Album.ArtistId nid
+
+Artist.ArtistId nid
+Artist.Name nid
+
+Customer.CustomerId nid
+Customer.SupportRepId nid
+Customer.Company nid ?
+Customer.FirstName idd
+Customer.LastName idd
+Customer.Phone idd
+Customer.Fax idd
+Customer.Email idd
+Customer.Address loc
+Customer.City loc
+Customer.State loc
+Customer.Country loc
+Customer.PostalCode loc
+
+Employee.EmployeeId nid
+Employee.ReportsTo nid
+Employee.LastName idd
+Employee.FirstName idd
+Employee.Phone idd
+Employee.Fax idd
+Employee.Email idd
+Employee.Title out
+Employee.BirthDate out
+Employee.HireDate out
+Employee.Address loc
+Employee.City loc
+Employee.State loc
+Employee.Country loc
+Employee.PostalCode loc
+
+Genre.GenreId nid
+Genre.Name nid
+
+Invoice.InvoiceId nid
+Invoice.CustomerId nid
+Invoice.InvoiceDate nid
+Invoice.Total nid
+Invoice.BillingAddress loc
+Invoice.BillingCity loc
+Invoice.BillingState loc
+Invoice.BillingCountry loc
+Invoice.BillingPostalCode loc
+
+InvoiceLine.InvoiceLineId nid
+InvoiceLine.InvoiceId nid
+InvoiceLine.TrackId nid
+InvoiceLine.UnitPrice nid
+InvoiceLine.Quantity nid
+
+MediaType.MediaTypeId nid
+MediaType.Name nid
+
+Playlist.PlaylistId nid
+Playlist.Name nid
+
+PlaylistTrack.PlaylistId nid
+PlaylistTrack.TrackId nid
+
+Track.TrackId nid
+Track.Name nid
+Track.AlbumId nid
+Track.MediaTypeId nid
+Track.GenreId nid
+Track.Milliseconds nid
+Track.Bytes nid
+Track.UnitPrice nid
+Track.Composer nid ?
+
+@achado SEM_CICLO_DE_VIDA Customer

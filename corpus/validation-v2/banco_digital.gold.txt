@@ -1,0 +1,77 @@
+# Gabarito: banco_digital (VALIDAÇÃO v2, congelado). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+bancos_ref.codigo_compe nid
+bancos_ref.nome nid
+bancos_ref.ispb nid
+
+clientes_pf.id nid
+clientes_pf.created_at nid
+clientes_pf.nome idd
+clientes_pf.cpf idd
+clientes_pf.rg idd
+clientes_pf.email idd
+clientes_pf.celular idd
+clientes_pf.nome_mae idd
+clientes_pf.data_nascimento out
+clientes_pf.profissao out
+clientes_pf.pep out ?
+clientes_pf.renda_mensal fin
+clientes_pf.cep loc
+clientes_pf.logradouro loc
+clientes_pf.numero loc
+clientes_pf.complemento loc
+clientes_pf.bairro loc
+clientes_pf.cidade loc
+clientes_pf.uf loc
+
+clientes_pj.id nid
+clientes_pj.razao_social nid
+clientes_pj.nome_fantasia nid
+clientes_pj.created_at nid
+clientes_pj.cnpj idd ?
+clientes_pj.email_financeiro nid ?
+
+contas.id nid
+contas.cliente_id nid
+contas.banco_codigo nid
+contas.tipo nid
+contas.created_at nid
+contas.agencia fin
+contas.numero fin
+contas.saldo fin
+
+cartoes.id nid
+cartoes.conta_id nid
+cartoes.bandeira nid
+cartoes.created_at nid
+cartoes.numero_token fin
+cartoes.validade fin
+cartoes.limite fin
+
+transacoes.id nid
+transacoes.conta_id nid
+transacoes.tipo nid
+transacoes.created_at nid
+transacoes.valor fin
+transacoes.pix_chave_destino fin
+transacoes.favorecido_nome idd
+transacoes.favorecido_documento idd ?
+transacoes.descricao out ?
+
+documentos_kyc.id nid
+documentos_kyc.cliente_id nid
+documentos_kyc.tipo_documento nid
+documentos_kyc.created_at nid
+documentos_kyc.numero_documento idd
+documentos_kyc.frente_url idd
+documentos_kyc.verso_url idd
+documentos_kyc.selfie_url out
+documentos_kyc.biometria_hash sen:biometrico
+
+logs_api.id nid
+logs_api.endpoint nid
+logs_api.cliente_id nid
+logs_api.created_at nid
+logs_api.ip loc
+
+@achado PESSOAL_EM_LOG logs_api

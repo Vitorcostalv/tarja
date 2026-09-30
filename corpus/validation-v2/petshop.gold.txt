@@ -1,0 +1,57 @@
+# Gabarito: petshop (VALIDAÇÃO v2, congelado). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+tutores.id nid
+tutores.criado_em nid
+tutores.nome_completo idd
+tutores.cpf idd
+tutores.email idd
+tutores.celular idd
+tutores.data_nascimento out
+tutores.cep loc
+tutores.endereco_entrega loc
+
+especies.id nid
+especies.nome nid
+
+pets.id nid
+pets.tutor_id nid
+pets.especie_id nid
+pets.nome nid
+pets.raca nid
+pets.data_nascimento nid
+pets.peso_kg nid
+pets.alergias nid
+pets.vacinas_em_dia nid
+pets.criado_em nid
+pets.microchip nid ?
+
+veterinarios.id nid
+veterinarios.criado_em nid
+veterinarios.nome idd
+veterinarios.crmv idd
+veterinarios.email idd
+veterinarios.telefone idd
+
+atendimentos.id nid
+atendimentos.pet_id nid
+atendimentos.veterinario_id nid
+atendimentos.data_hora nid
+atendimentos.diagnostico nid
+atendimentos.prescricao nid
+atendimentos.valor nid
+atendimentos.criado_em nid
+
+agendamentos.id nid
+agendamentos.tutor_id nid
+agendamentos.pet_id nid
+agendamentos.inicio nid
+agendamentos.criado_em nid
+agendamentos.observacao nid ?
+
+pagamentos_pix.id nid
+pagamentos_pix.agendamento_id nid
+pagamentos_pix.txid nid
+pagamentos_pix.valor nid
+pagamentos_pix.pago_em nid
+pagamentos_pix.chave_pix fin
+

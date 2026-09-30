@@ -1,0 +1,62 @@
+# Gabarito: hospital_en (VALIDAÇÃO v2, congelado). Escrito antes de rodar o classificador. Critérios: corpus/GABARITO.md.
+
+patients.patient_id nid
+patients.created_at nid
+patients.deleted_at nid
+patients.full_name idd
+patients.ssn idd
+patients.home_phone idd
+patients.email idd
+patients.emergency_contact_name idd
+patients.emergency_contact_phone idd
+patients.dob out
+patients.gender out
+patients.notes out ?
+patients.blood_type sen:saude
+patients.hiv_status sen:saude
+patients.insurance_number sen:saude ?
+patients.street_address loc
+patients.zip loc
+
+physicians.physician_id nid
+physicians.name idd
+physicians.license_number idd
+physicians.email idd
+physicians.specialty out
+
+admissions.admission_id nid
+admissions.patient_id nid
+admissions.admitted_at nid
+admissions.discharged_at nid
+admissions.attending_physician_id nid
+admissions.ward nid ?
+admissions.diagnosis_code sen:saude
+
+lab_results.result_id nid
+lab_results.patient_id nid
+lab_results.taken_at nid
+lab_results.created_at nid
+lab_results.test_name sen:saude
+lab_results.result_value sen:saude
+
+billing.invoice_id nid
+billing.patient_id nid
+billing.amount nid
+billing.paid nid
+billing.created_at nid
+billing.insurance_claim_no sen:saude ?
+
+wards.ward_id nid
+wards.name nid
+wards.floor nid
+wards.beds nid
+
+@achado SENSIVEL_SEM_PROTECAO patients.blood_type
+@achado SENSIVEL_SEM_PROTECAO patients.hiv_status
+@achado SENSIVEL_SEM_PROTECAO patients.insurance_number
+@achado SENSIVEL_SEM_PROTECAO admissions.diagnosis_code
+@achado SENSIVEL_SEM_PROTECAO lab_results.test_name
+@achado SENSIVEL_SEM_PROTECAO lab_results.result_value
+@achado SENSIVEL_SEM_PROTECAO billing.insurance_claim_no
+@achado TEXTO_LIVRE patients.notes
+@achado SEM_CICLO_DE_VIDA physicians

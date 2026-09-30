@@ -15,7 +15,9 @@
     "corpus:metrics": "tsx scripts/corpus-metrics.ts",
     "corpus:validacao": "tsx scripts/corpus-metrics.ts --validacao",
     "corpus:externo": "tsx scripts/corpus-metrics.ts --externo",
-    "freeze:validacao": "tsx scripts/freeze-validation.ts"
+    "freeze:validacao": "tsx scripts/freeze-validation.ts",
+    "corpus:fetch": "tsx scripts/fetch-external.ts",
+    "pretest:slow": "npm run corpus:fetch"
   },
   "dependencies": {
     "next": "^16.3.8",

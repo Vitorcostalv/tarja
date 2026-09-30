@@ -1,0 +1,379 @@
+# Gabarito: openemr (EXTERNO v2, terceiros, GPL v3; o SQL é baixado por scripts/fetch-external.ts e não está no repositório).
+# Escrito antes de rodar o classificador. Muitas colunas ficam com ? porque o significado depende de como o consultório usa o campo.
+# Só as tabelas patient_data, insurance_data, users, employer_data, prescriptions e immunizations.
+
+patient_data.id nid
+patient_data.uuid nid
+patient_data.pharmacy_id nid
+patient_data.referrerID nid
+patient_data.providerID nid
+patient_data.ref_providerID nid
+patient_data.pid nid
+patient_data.date nid
+patient_data.squad nid
+patient_data.pricelevel nid
+patient_data.regdate nid
+patient_data.soap_import_status nid
+patient_data.dupscore nid
+patient_data.created_by nid
+patient_data.updated_by nid
+patient_data.last_updated nid
+patient_data.care_team_facility nid
+patient_data.billing_note nid ?
+patient_data.genericname1 nid ?
+patient_data.genericval1 nid ?
+patient_data.genericname2 nid ?
+patient_data.genericval2 nid ?
+patient_data.contrastart nid ?
+patient_data.advance_directive_user_authenticator nid ?
+patient_data.care_team_provider nid ?
+patient_data.care_team_status nid ?
+patient_data.publ_code_eff_date nid ?
+patient_data.prot_indi_effdate nid ?
+patient_data.provider_since_date nid ?
+patient_data.fname idd
+patient_data.lname idd
+patient_data.mname idd
+patient_data.drivers_license idd
+patient_data.ss idd
+patient_data.phone_home idd
+patient_data.phone_biz idd
+patient_data.phone_contact idd
+patient_data.phone_cell idd
+patient_data.email idd
+patient_data.email_direct idd
+patient_data.pubpid idd
+patient_data.mothersname idd
+patient_data.cmsportal_login idd
+patient_data.birth_fname idd
+patient_data.birth_lname idd
+patient_data.birth_mname idd
+patient_data.name_history idd
+patient_data.preferred_name idd
+patient_data.DOB out
+patient_data.title out
+patient_data.language out
+patient_data.occupation out
+patient_data.sex out
+patient_data.contact_relationship out
+patient_data.industry out
+patient_data.nationality_country out
+patient_data.family_size out
+patient_data.status out ?
+patient_data.referrer out ?
+patient_data.interpreter out ?
+patient_data.interpreter_needed out ?
+patient_data.migrantseasonal out ?
+patient_data.homeless out ?
+patient_data.fitness out ?
+patient_data.referral_source out ?
+patient_data.usertext1 out ?
+patient_data.usertext2 out ?
+patient_data.usertext3 out ?
+patient_data.usertext4 out ?
+patient_data.usertext5 out ?
+patient_data.usertext6 out ?
+patient_data.usertext7 out ?
+patient_data.usertext8 out ?
+patient_data.userlist1 out ?
+patient_data.userlist2 out ?
+patient_data.userlist3 out ?
+patient_data.userlist4 out ?
+patient_data.userlist5 out ?
+patient_data.userlist6 out ?
+patient_data.userlist7 out ?
+patient_data.hipaa_mail out ?
+patient_data.hipaa_voice out ?
+patient_data.hipaa_notice out ?
+patient_data.hipaa_message out ?
+patient_data.hipaa_allowsms out ?
+patient_data.hipaa_allowemail out ?
+patient_data.allow_imm_reg_use out ?
+patient_data.allow_imm_info_share out ?
+patient_data.allow_health_info_ex out ?
+patient_data.allow_patient_portal out ?
+patient_data.publicity_code out ?
+patient_data.protect_indicator out ?
+patient_data.gender_identity out ?
+patient_data.suffix out ?
+patient_data.patient_groups out ?
+patient_data.prevent_portal_apps out ?
+patient_data.sex_identified out ?
+patient_data.pronoun out ?
+patient_data.deceased_date out ?
+patient_data.monthly_income fin
+patient_data.financial fin ?
+patient_data.financial_review fin ?
+patient_data.street loc
+patient_data.postal_code loc
+patient_data.city loc
+patient_data.state loc
+patient_data.country_code loc
+patient_data.county loc
+patient_data.street_line_2 loc
+patient_data.ethnoracial sen:racial
+patient_data.race sen:racial
+patient_data.ethnicity sen:racial
+patient_data.tribal_affiliations sen:racial ?
+patient_data.religion sen:religiao
+patient_data.sexual_orientation sen:vida_sexual
+patient_data.completed_ad sen:saude ?
+patient_data.ad_reviewed sen:saude ?
+patient_data.deceased_reason sen:saude ?
+patient_data.imm_reg_status sen:saude ?
+patient_data.imm_reg_stat_effdate sen:saude ?
+patient_data.guardiansname cri
+patient_data.guardianaddress cri
+patient_data.guardiancity cri
+patient_data.guardianstate cri
+patient_data.guardianpostalcode cri
+patient_data.guardiancountry cri
+patient_data.guardianphone cri
+patient_data.guardianworkphone cri
+patient_data.guardianemail cri
+patient_data.guardianrelationship cri
+patient_data.guardiansex cri
+patient_data.vfc cri ?
+
+insurance_data.id nid
+insurance_data.uuid nid
+insurance_data.type nid
+insurance_data.provider nid
+insurance_data.pid nid
+insurance_data.date nid
+insurance_data.accept_assignment nid
+insurance_data.policy_type nid
+insurance_data.date_end nid
+insurance_data.plan_name sen:saude ?
+insurance_data.policy_number sen:saude ?
+insurance_data.group_number sen:saude ?
+insurance_data.subscriber_lname idd
+insurance_data.subscriber_mname idd
+insurance_data.subscriber_fname idd
+insurance_data.subscriber_ss idd
+insurance_data.subscriber_phone idd
+insurance_data.subscriber_relationship out
+insurance_data.subscriber_DOB out
+insurance_data.subscriber_employer out
+insurance_data.subscriber_sex out
+insurance_data.subscriber_street loc
+insurance_data.subscriber_postal_code loc
+insurance_data.subscriber_city loc
+insurance_data.subscriber_state loc
+insurance_data.subscriber_country loc
+insurance_data.subscriber_street_line_2 loc
+insurance_data.subscriber_employer_street loc ?
+insurance_data.subscriber_employer_postal_code loc ?
+insurance_data.subscriber_employer_state loc ?
+insurance_data.subscriber_employer_country loc ?
+insurance_data.subscriber_employer_city loc ?
+insurance_data.subscriber_employer_street_line_2 loc ?
+insurance_data.copay fin ?
+
+users.id nid
+users.uuid nid
+users.authorized nid
+users.source nid
+users.facility nid
+users.facility_id nid
+users.see_auth nid
+users.active nid
+users.cal_ui nid
+users.taxonomy nid
+users.calendar nid
+users.abook_type nid
+users.default_warehouse nid
+users.irnpool nid
+users.newcrop_user_role nid
+users.cpoe nid
+users.main_menu_role nid
+users.patient_menu_role nid
+users.portal_user nid
+users.supervisor_id nid
+users.billing_facility nid
+users.billing_facility_id nid
+users.date_created nid
+users.last_updated nid
+users.organization nid
+users.username idd
+users.fname idd
+users.mname idd
+users.lname idd
+users.federaltaxid idd
+users.federaldrugid idd
+users.upin idd
+users.npi idd
+users.email idd
+users.email_direct idd
+users.google_signin_email idd
+users.phonecell idd
+users.state_license_number idd
+users.billname idd ?
+users.phone idd ?
+users.fax idd ?
+users.phonew1 idd ?
+users.phonew2 idd ?
+users.weno_prov_id idd ?
+users.title out
+users.specialty out
+users.info out ?
+users.suffix out ?
+users.valedictory out ?
+users.notes out ?
+users.physician_type out ?
+users.password nid ?
+users.url nid ?
+users.assistant nid ?
+users.street loc ?
+users.streetb loc ?
+users.city loc ?
+users.state loc ?
+users.zip loc ?
+users.country_code loc ?
+users.street2 loc ?
+users.streetb2 loc ?
+users.city2 loc ?
+users.state2 loc ?
+users.zip2 loc ?
+users.country_code2 loc ?
+
+employer_data.id nid
+employer_data.uuid nid
+employer_data.date nid
+employer_data.pid nid
+employer_data.created_by nid
+employer_data.name nid ?
+employer_data.street loc ?
+employer_data.street_line_2 loc ?
+employer_data.postal_code loc ?
+employer_data.city loc ?
+employer_data.state loc ?
+employer_data.country loc ?
+employer_data.start_date out ?
+employer_data.end_date out ?
+employer_data.industry out ?
+employer_data.occupation out
+
+prescriptions.id nid
+prescriptions.uuid nid
+prescriptions.patient_id nid
+prescriptions.filled_by_id nid
+prescriptions.pharmacy_id nid
+prescriptions.date_added nid
+prescriptions.date_modified nid
+prescriptions.provider_id nid
+prescriptions.encounter nid
+prescriptions.drug_id nid
+prescriptions.substitute nid
+prescriptions.per_refill nid
+prescriptions.active nid
+prescriptions.datetime nid
+prescriptions.user nid
+prescriptions.site nid
+prescriptions.prescriptionguid nid
+prescriptions.erx_source nid
+prescriptions.erx_uploaded nid
+prescriptions.external_id nid
+prescriptions.created_by nid
+prescriptions.updated_by nid
+prescriptions.size nid ?
+prescriptions.unit nid ?
+prescriptions.refills nid ?
+prescriptions.filled_date nid ?
+prescriptions.end_date nid ?
+prescriptions.ntx nid ?
+prescriptions.rtx nid ?
+prescriptions.txDate nid ?
+prescriptions.usage_category nid ?
+prescriptions.usage_category_title nid ?
+prescriptions.request_intent nid ?
+prescriptions.request_intent_title nid ?
+prescriptions.drug sen:saude
+prescriptions.dosage sen:saude
+prescriptions.indication sen:saude
+prescriptions.drug_dosage_instructions sen:saude
+prescriptions.diagnosis sen:saude
+prescriptions.start_date sen:saude ?
+prescriptions.rxnorm_drugcode sen:saude ?
+prescriptions.form sen:saude ?
+prescriptions.quantity sen:saude ?
+prescriptions.route sen:saude ?
+prescriptions.interval sen:saude ?
+prescriptions.medication sen:saude ?
+prescriptions.note sen:saude ?
+prescriptions.drug_info_erx sen:saude ?
+prescriptions.prn sen:saude ?
+
+immunizations.id nid
+immunizations.uuid nid
+immunizations.patient_id nid
+immunizations.immunization_id nid
+immunizations.manufacturer nid
+immunizations.lot_number nid
+immunizations.administered_by_id nid
+immunizations.create_date nid
+immunizations.update_date nid
+immunizations.created_by nid
+immunizations.updated_by nid
+immunizations.expiration_date nid
+immunizations.added_erroneously nid
+immunizations.external_id nid
+immunizations.encounter_id nid
+immunizations.administered_by nid ?
+immunizations.education_date nid ?
+immunizations.vis_date nid ?
+immunizations.amount_administered nid ?
+immunizations.amount_administered_unit nid ?
+immunizations.route nid ?
+immunizations.administration_site nid ?
+immunizations.information_source nid ?
+immunizations.ordering_provider nid ?
+immunizations.administered_date sen:saude
+immunizations.cvx_code sen:saude ?
+immunizations.note sen:saude ?
+immunizations.completion_status sen:saude ?
+immunizations.refusal_reason sen:saude ?
+immunizations.reason_code sen:saude ?
+immunizations.reason_description sen:saude ?
+
+@achado SENSIVEL_SEM_PROTECAO patient_data.ethnoracial
+@achado SENSIVEL_SEM_PROTECAO patient_data.race
+@achado SENSIVEL_SEM_PROTECAO patient_data.ethnicity
+@achado SENSIVEL_SEM_PROTECAO patient_data.tribal_affiliations
+@achado SENSIVEL_SEM_PROTECAO patient_data.religion
+@achado SENSIVEL_SEM_PROTECAO patient_data.sexual_orientation
+@achado SENSIVEL_SEM_PROTECAO patient_data.completed_ad
+@achado SENSIVEL_SEM_PROTECAO patient_data.ad_reviewed
+@achado SENSIVEL_SEM_PROTECAO patient_data.deceased_reason
+@achado SENSIVEL_SEM_PROTECAO patient_data.imm_reg_status
+@achado SENSIVEL_SEM_PROTECAO patient_data.imm_reg_stat_effdate
+@achado SENSIVEL_SEM_PROTECAO insurance_data.plan_name
+@achado SENSIVEL_SEM_PROTECAO insurance_data.policy_number
+@achado SENSIVEL_SEM_PROTECAO insurance_data.group_number
+@achado SENSIVEL_SEM_PROTECAO prescriptions.drug
+@achado SENSIVEL_SEM_PROTECAO prescriptions.dosage
+@achado SENSIVEL_SEM_PROTECAO prescriptions.indication
+@achado SENSIVEL_SEM_PROTECAO prescriptions.drug_dosage_instructions
+@achado SENSIVEL_SEM_PROTECAO prescriptions.diagnosis
+@achado SENSIVEL_SEM_PROTECAO prescriptions.start_date
+@achado SENSIVEL_SEM_PROTECAO prescriptions.rxnorm_drugcode
+@achado SENSIVEL_SEM_PROTECAO prescriptions.form
+@achado SENSIVEL_SEM_PROTECAO prescriptions.quantity
+@achado SENSIVEL_SEM_PROTECAO prescriptions.route
+@achado SENSIVEL_SEM_PROTECAO prescriptions.interval
+@achado SENSIVEL_SEM_PROTECAO prescriptions.medication
+@achado SENSIVEL_SEM_PROTECAO prescriptions.note
+@achado SENSIVEL_SEM_PROTECAO prescriptions.drug_info_erx
+@achado SENSIVEL_SEM_PROTECAO prescriptions.prn
+@achado SENSIVEL_SEM_PROTECAO immunizations.administered_date
+@achado SENSIVEL_SEM_PROTECAO immunizations.cvx_code
+@achado SENSIVEL_SEM_PROTECAO immunizations.note
+@achado SENSIVEL_SEM_PROTECAO immunizations.completion_status
+@achado SENSIVEL_SEM_PROTECAO immunizations.refusal_reason
+@achado SENSIVEL_SEM_PROTECAO immunizations.reason_code
+@achado SENSIVEL_SEM_PROTECAO immunizations.reason_description
+@achado TEXTO_LIVRE patient_data.billing_note
+@achado TEXTO_LIVRE users.notes
+@achado TEXTO_LIVRE prescriptions.note
+@achado TEXTO_LIVRE immunizations.note
+@achado INDICIO_MENOR patient_data
