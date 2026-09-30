@@ -19,7 +19,8 @@
     "corpus:fetch": "tsx scripts/fetch-external.ts",
     "pretest:slow": "npm run corpus:fetch",
     "corpus:validacao-v2": "tsx scripts/corpus-metrics.ts --validacao-v2",
-    "corpus:externo-v2": "tsx scripts/corpus-metrics.ts --externo-v2"
+    "corpus:externo-v2": "tsx scripts/corpus-metrics.ts --externo-v2",
+    "doc:padroes": "tsx scripts/gerar-doc-padroes.ts"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.3.0",

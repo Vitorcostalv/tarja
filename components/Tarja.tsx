@@ -10,11 +10,16 @@ import { AVISO } from "../lib/lgpd/report";
 import { FONTES } from "../lib/lgpd/rules/fontes";
 import type { Achado } from "../lib/lgpd/types";
 import { SCHEMA_EXEMPLO } from "../lib/exemplo";
+import { SCRIPT_EXEMPLO_PADROES } from "../lib/ddl/exemplo";
+import { paraJsonPadroes, paraMarkdownPadroes } from "../lib/ddl/exportar";
+import { OPCOES_PADRAO, type OpcoesPadroes } from "../lib/ddl/verificar";
 import { INPUT_TOO_BIG_MESSAGE, LIMITS, utf8ByteLength } from "../lib/limits";
 import { baixarArquivo } from "../lib/ui/arquivo";
 import { LINKS } from "../lib/ui/links";
 import { Coluna, type Preenchimento } from "./Coluna";
+import { CatalogoDeRegras, OpcoesDosPadroes, ResultadoDosPadroes } from "./Padroes";
 import { useAnalise } from "./useAnalise";
+import { usePadroes } from "./usePadroes";
 
 const VAZIO: Preenchimento = { finalidade: "", retencao: "" };
 /** Quantas tabelas o documento desenha de cada vez: com milhares de colunas, desenhar tudo travaria a aba. O relatório exportado tem tudo. */
@@ -36,8 +41,13 @@ export function Tarja() {
   const [mostrarRelatorio, setMostrarRelatorio] = useState(false);
   const [tabelasVisiveis, setTabelasVisiveis] = useState(POR_PAGINA);
   const resultadoRef = useRef<HTMLDivElement>(null);
+  // Duas camadas na mesma página: a de LGPD e a dos Padrões de DDL (v2). O texto colado é o mesmo.
+  const [camada, setCamada] = useState<"lgpd" | "padroes">("lgpd");
+  const [opcoesPadroes, setOpcoesPadroes] = useState<OpcoesPadroes>(OPCOES_PADRAO);
 
-  const { pronto, parse, analise } = useAnalise(analisado, correcoes);
+  const { pronto: prontoLgpd, parse, analise } = useAnalise(camada === "lgpd" ? analisado : null, correcoes);
+  const { pronto: prontoPadroes, resultado: padroes } = usePadroes(camada === "padroes" ? analisado : null, opcoesPadroes);
+  const pronto = camada === "lgpd" ? prontoLgpd : prontoPadroes;
 
   const relatorio = useMemo(
     () => (analise ? gerarRelatorio(analise, { geradoEm: dataDeHoje(), preenchimentos: preench }) : null),
@@ -60,16 +70,19 @@ export function Tarja() {
   }, []);
 
   const usarExemplo = useCallback(() => {
-    setTexto(SCHEMA_EXEMPLO);
-    analisar(SCHEMA_EXEMPLO);
+    const exemplo = camada === "lgpd" ? SCHEMA_EXEMPLO : SCRIPT_EXEMPLO_PADROES;
+    setTexto(exemplo);
+    analisar(exemplo);
     setTimeout(() => resultadoRef.current?.focus(), 50);
-  }, [analisar]);
+  }, [analisar, camada]);
 
   // Link de demonstração: "#exemplo" abre já com o schema de exemplo. O hash nunca carrega schema de ninguém:
   // é só um atalho para o exemplo fixo (serve para print, README e divulgação).
   useEffect(() => {
     if (window.location.hash === "#exemplo") usarExemplo();
-  }, [usarExemplo]);
+    // Só na abertura da página: trocar de camada depois não deve recarregar o exemplo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const limpar = () => {
     setTexto("");
     setAnalisado(null);
@@ -111,6 +124,12 @@ export function Tarja() {
     return inicios;
   }, [analise]);
 
+  const exportarPadroes = (formato: "md" | "json") => {
+    if (!padroes) return;
+    if (formato === "md") baixarArquivo("padroes-ddl-v2.md", paraMarkdownPadroes(padroes), "text/markdown");
+    else baixarArquivo("padroes-ddl-v2.json", paraJsonPadroes(padroes), "application/json");
+  };
+
   const achadosDa = (tabela: string): Achado[] => (analise ? analise.achados.filter((a) => a.tabela === tabela) : []);
 
   return (
@@ -125,12 +144,25 @@ export function Tarja() {
         <p className="sub">Raio-X de LGPD para schemas SQL</p>
         <div className="aviso" role="note">
           <ul>
-            <li>
-              <strong>Isto é apoio, não parecer jurídico.</strong> Não substitui advogado nem DPO.
-            </li>
-            <li>
-              <strong>Regras, não IA.</strong> Dá para auditar cada decisão: todas têm motivo e fonte.
-            </li>
+            {camada === "lgpd" ? (
+              <>
+                <li>
+                  <strong>Isto é apoio, não parecer jurídico.</strong> Não substitui advogado nem DPO.
+                </li>
+                <li>
+                  <strong>Regras, não IA.</strong> Dá para auditar cada decisão: todas têm motivo e fonte.
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <strong>Isto não é LGPD e não é lei.</strong> São convenções de DDL do autor do projeto (MySQL): valem para quem adota o padrão.
+                </li>
+                <li>
+                  <strong>Regras, não IA.</strong> Cada achado traz o id da regra e o porquê; dá para ler todas as regras abaixo.
+                </li>
+              </>
+            )}
             <li>
               <strong>Nada sai do seu navegador.</strong> Sem servidor, sem conta, sem rastreamento. <a href="#como-verificar">Como conferir</a>.
             </li>
@@ -139,9 +171,20 @@ export function Tarja() {
       </header>
 
       <main>
+        <div className="camadas nao-imprimir" role="group" aria-label="O que verificar">
+          <button type="button" className="camada" aria-pressed={camada === "lgpd"} onClick={() => setCamada("lgpd")}>
+            LGPD
+            <span className="camada-sub">dado pessoal nas colunas</span>
+          </button>
+          <button type="button" className="camada" aria-pressed={camada === "padroes"} onClick={() => setCamada("padroes")}>
+            Padrões de DDL (v2)
+            <span className="camada-sub">convenções de nomes, tipos e rotinas</span>
+          </button>
+        </div>
+
         <section className="entrada entrada-topo nao-imprimir" aria-labelledby="titulo-entrada">
           <label htmlFor="ddl" id="titulo-entrada">
-            <span className="rotulo">1 · Cole o CREATE TABLE (só MySQL)</span>
+            <span className="rotulo">{camada === "lgpd" ? "1 · Cole o CREATE TABLE (só MySQL)" : "1 · Cole o DDL: tabelas e rotinas (MySQL)"}</span>
           </label>
           <textarea
             id="ddl"
@@ -152,18 +195,25 @@ export function Tarja() {
             onKeyDown={(e) => {
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter") analisar(texto);
             }}
-            placeholder={"CREATE TABLE clientes (\n  id INT PRIMARY KEY,\n  nome VARCHAR(100),\n  cpf CHAR(11)\n);"}
+            placeholder={
+              camada === "lgpd"
+                ? "CREATE TABLE clientes (\n  id INT PRIMARY KEY,\n  nome VARCHAR(100),\n  cpf CHAR(11)\n);"
+                : "CREATE TABLE app.tb_cliente (\n  cod_cliente int(11) NOT NULL AUTO_INCREMENT,\n  ...\n) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
+            }
             aria-describedby="ajuda-entrada"
           />
           <p id="ajuda-entrada" className="nota">
-            Aceita várias tabelas, crases, comentários e COMMENT de coluna. Fica de fora: ALTER TABLE, views, triggers e outros bancos. Limite de 1 MB. Ctrl+Enter analisa.
+            {camada === "lgpd"
+              ? "Aceita várias tabelas, crases, comentários e COMMENT de coluna. Fica de fora: ALTER TABLE, views, triggers e outros bancos. Limite de 1 MB. Ctrl+Enter analisa."
+              : "Aceita várias tabelas, procedures, functions, triggers e events (com ou sem DELIMITER) e comandos soltos. Limite de 1 MB. Ctrl+Enter verifica."}
           </p>
+          {camada === "padroes" ? <OpcoesDosPadroes opcoes={opcoesPadroes} onMudar={setOpcoesPadroes} /> : null}
           <div className="acoes">
             <button type="button" className="botao botao-principal" onClick={() => analisar(texto)} disabled={texto.trim() === ""}>
-              Analisar
+              {camada === "lgpd" ? "Analisar" : "Verificar"}
             </button>
             <button type="button" className="botao" onClick={usarExemplo}>
-              Usar schema de exemplo
+              {camada === "lgpd" ? "Usar schema de exemplo" : "Usar script de exemplo"}
             </button>
             <button type="button" className="botao" onClick={limpar} disabled={texto === "" && analisado === null}>
               Limpar
@@ -174,6 +224,7 @@ export function Tarja() {
               <strong>Entrada grande demais.</strong> {INPUT_TOO_BIG_MESSAGE}
             </p>
           ) : null}
+          {camada === "padroes" ? <CatalogoDeRegras /> : null}
         </section>
 
         <p className="so-leitor" role="status" aria-live="polite">
@@ -181,14 +232,38 @@ export function Tarja() {
             ? ""
             : !pronto
               ? "Analisando o schema."
-              : resumo
+              : camada === "padroes"
+                ? padroes
+                  ? `Verificação pronta: ${padroes.violacoes.filter((v) => v.severidade === "erro").length} erros e ${padroes.violacoes.filter((v) => v.severidade === "aviso").length} avisos.`
+                  : "Nada para mostrar."
+                : resumo
                 ? `Análise pronta: ${resumo.tabelas} tabelas, ${resumo.colunas} colunas, ${resumo.pessoais} com dado pessoal, ${resumo.sensiveis} sensíveis, ${resumo.semClassificacao} sem pista para revisar.`
                 : "Nada para mostrar."}
         </p>
         <div ref={resultadoRef} tabIndex={-1} aria-busy={!pronto} className="resultado">
           {analisado !== null && !pronto ? <p className="mensagem">Analisando…</p> : null}
 
-          {parse && analise && relatorio && resumo ? (
+          {camada === "padroes" && padroes ? (
+            <>
+              <ResultadoDosPadroes r={padroes} />
+              {!padroes.rejeitado && (padroes.tabelas.length > 0 || padroes.rotinas.length > 0) ? (
+                <section className="exportar nao-imprimir" aria-labelledby="titulo-exportar-padroes">
+                  <h2 id="titulo-exportar-padroes">Levar o resultado</h2>
+                  <p className="nota">Só os achados e os nomes dos objetos vão para o arquivo: o DDL que você colou não entra.</p>
+                  <div className="acoes">
+                    <button type="button" className="botao" onClick={() => exportarPadroes("md")}>
+                      Markdown
+                    </button>
+                    <button type="button" className="botao" onClick={() => exportarPadroes("json")}>
+                      JSON
+                    </button>
+                  </div>
+                </section>
+              ) : null}
+            </>
+          ) : null}
+
+          {camada === "lgpd" && parse && analise && relatorio && resumo ? (
             <>
               {parse.errors.length > 0 ? (
                 <section className="mensagem" aria-label="Problemas de sintaxe">

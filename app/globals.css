@@ -133,6 +133,96 @@ h3 {
   padding-left: 1.1rem;
 }
 
+/* ---------- camadas: LGPD × Padrões de DDL ---------- */
+.camadas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 1.5rem;
+  border: 2px solid var(--color-tinta);
+}
+@media (max-width: 560px) {
+  .camadas {
+    grid-template-columns: 1fr;
+  }
+}
+.camada {
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1.25rem;
+  text-align: left;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--color-tinta);
+  border: 0;
+  border-right: 1px solid var(--color-tinta);
+  cursor: pointer;
+  display: grid;
+  gap: 0.1rem;
+}
+.camada:last-child {
+  border-right: 0;
+}
+.camada[aria-pressed="true"] {
+  background: var(--color-tinta);
+  color: var(--color-papel);
+}
+.camada-sub {
+  font-family: var(--font-texto);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.875rem;
+}
+
+/* ---------- padrões de DDL ---------- */
+.catalogo {
+  margin-top: 1rem;
+  border: 2px solid var(--color-tinta);
+  background: #fbf9f2;
+  padding: 0.6rem 1rem;
+}
+.catalogo summary {
+  cursor: pointer;
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+.catalogo ul {
+  list-style: none;
+  margin: 0.4rem 0 0.8rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.catalogo-secao {
+  font-size: 1.05rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--color-linha);
+}
+.opcoes-padroes {
+  margin-top: 0.75rem;
+}
+.detalhe-padrao {
+  padding: 0.6rem 1rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.carimbo.cheio {
+  background: var(--color-tinta);
+  color: var(--color-papel);
+}
+.folha ol > .linha {
+  list-style: none;
+}
+
 /* ---------- entrada ---------- */
 .entrada label {
   display: block;
@@ -608,6 +698,10 @@ h3 {
     background: #fff;
   }
   .nao-imprimir {
+    display: none !important;
+  }
+  .camadas,
+  .catalogo summary {
     display: none !important;
   }
   .tarja,

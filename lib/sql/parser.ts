@@ -195,6 +195,11 @@ export function parseDdl(text: string): ParseResult {
       isPrimaryKey: false,
       autoIncrement: false,
       hasDefault: false,
+      defaultRaw: null,
+      unsigned: false,
+      charset: null,
+      collate: null,
+      onUpdateRaw: null,
       comment: null,
       line: nameTok.line,
     };
@@ -215,12 +220,14 @@ export function parseDdl(text: string): ParseResult {
       } else if (w === "default") {
         column.hasDefault = true;
         j++;
+        const inicio = j;
         if (isPunct(tokens[j], "-") || isPunct(tokens[j], "+")) j++;
         if (j < b && isPunct(tokens[j], "(")) j = skipGroup(j, b);
         else if (j < b) {
           j++;
           if (j < b && isPunct(tokens[j], "(")) j = skipGroup(j, b);
         }
+        if (j > inicio) column.defaultRaw = text.slice((tokens[inicio] as Token).start, (tokens[j - 1] as Token).end);
       } else if (w === "auto_increment") {
         column.autoIncrement = true;
         j++;
@@ -255,12 +262,25 @@ export function parseDdl(text: string): ParseResult {
         } else {
           j++;
         }
+      } else if (w === "unsigned") {
+        column.unsigned = true;
+        j++;
       } else if (w === "character" && lower(tokens[j + 1]) === "set") {
+        column.charset = (tokens[j + 2] as Token | undefined)?.value.toLowerCase() ?? null;
         j += 3;
-      } else if (w === "charset" || w === "collate") {
+      } else if (w === "charset") {
+        column.charset = (tokens[j + 1] as Token | undefined)?.value.toLowerCase() ?? null;
         j += 2;
+      } else if (w === "collate") {
+        column.collate = (tokens[j + 1] as Token | undefined)?.value.toLowerCase() ?? null;
+        j += 2;
+      } else if (w === "on" && lower(tokens[j + 1]) === "update") {
+        const inicio = j + 2;
+        j = inicio < b ? inicio + 1 : b;
+        if (j < b && isPunct(tokens[j], "(")) j = skipGroup(j, b);
+        if (inicio < b) column.onUpdateRaw = text.slice((tokens[inicio] as Token).start, (tokens[j - 1] as Token).end);
       } else if (w === "on") {
-        j += 3; // ON UPDATE CURRENT_TIMESTAMP / ON DELETE ...
+        j += 3; // ON DELETE ...
       } else {
         j++;
       }
@@ -309,11 +329,30 @@ export function parseDdl(text: string): ParseResult {
       table.foreignKeys.push(fk);
       return;
     }
-    if (
-      ["unique", "key", "index", "fulltext", "spatial", "check", "like", "period"].includes(w) &&
-      first.kind === "word"
-    ) {
-      return; // índices e checks não mudam a classificação
+    if (["unique", "key", "index", "fulltext", "spatial"].includes(w) && first.kind === "word") {
+      // Índice: [UNIQUE|FULLTEXT|SPATIAL] [KEY|INDEX] [nome] (colunas)
+      let p = k;
+      let unique = false;
+      let kind: "key" | "fulltext" | "spatial" = "key";
+      if (lower(tokens[p]) === "unique") {
+        unique = true;
+        p++;
+      } else if (lower(tokens[p]) === "fulltext" || lower(tokens[p]) === "spatial") {
+        kind = lower(tokens[p]) as "fulltext" | "spatial";
+        p++;
+      }
+      if (lower(tokens[p]) === "key" || lower(tokens[p]) === "index") p++;
+      let nome: string | null = null;
+      if (p < b && isNameToken(tokens[p]) && !isPunct(tokens[p], "(") && lower(tokens[p]) !== "using") {
+        nome = nameOf(tokens[p] as Token);
+        p++;
+      }
+      while (p < b && !isPunct(tokens[p], "(")) p++;
+      if (p < b) table.indexes.push({ name: nome, unique, kind, columns: namesInGroup(p, b).names, line: first.line });
+      return;
+    }
+    if (["check", "like", "period"].includes(w) && first.kind === "word") {
+      return; // checks não mudam a classificação
     }
     if (w === "constraint") return;
 
@@ -362,6 +401,8 @@ export function parseDdl(text: string): ParseResult {
       columns: [],
       primaryKey: [],
       foreignKeys: [],
+      indexes: [],
+      options: { engine: null, charset: null, collate: null, autoIncrement: null },
       comment: null,
       line: startTok.line,
     };
@@ -408,11 +449,23 @@ export function parseDdl(text: string): ParseResult {
           next = m;
           break;
         }
-        if (lower(tokens[m]) === "comment") {
+        const w = lower(tokens[m]);
+        if (w === "comment") {
           let v = m + 1;
           if (isPunct(tokens[v], "=")) v++;
           const s = tokens[v];
           if (v < end && s && (s.kind === "string" || s.kind === "dstring")) table.comment = s.value;
+        } else if (w === "engine" || w === "charset" || w === "collate" || w === "auto_increment" || (w === "character" && lower(tokens[m + 1]) === "set")) {
+          let v = m + (w === "character" ? 2 : 1);
+          if (isPunct(tokens[v], "=")) v++;
+          const valor = tokens[v];
+          if (v < end && valor && valor.kind !== "punct") {
+            const texto = valor.value;
+            if (w === "engine") table.options.engine = texto;
+            else if (w === "collate") table.options.collate = texto.toLowerCase();
+            else if (w === "auto_increment") table.options.autoIncrement = texto;
+            else table.options.charset = texto.toLowerCase();
+          }
         }
       }
     }

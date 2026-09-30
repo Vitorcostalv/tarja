@@ -12,6 +12,19 @@
 - **O motor não é IA.** São regras determinísticas e testáveis: dá para auditar cada decisão. Toda classificação vem com o motivo e a fonte.
 - **Base legal, finalidade e prazo de retenção dependem do negócio.** A Tarja só sugere *hipóteses* de base legal, marcadas como hipótese. Finalidade fica em branco para você preencher. Retenção fica "a definir pelo controlador": a ferramenta nunca inventa prazo.
 
+## Duas camadas na mesma página
+
+O seletor no topo escolhe o que verificar sobre o **mesmo DDL colado**:
+
+| Camada | O que faz | De onde vêm as regras |
+|---|---|---|
+| **LGPD** | Diz quais colunas guardam dado pessoal ou sensível, com motivo, confiança, fonte e sugestão de proteção, e monta o rascunho do inventário. | Lei 13.709/2018 e guias da ANPD, com fonte em cada regra. |
+| **Padrões de DDL (v2)** | Confere convenções de banco MySQL: prefixos e tipos de coluna, defaults, índices, ordem das colunas, perfis `tr_`, `_hist`, `_arc` e extensão, `DEFINER`, nomes e acionamento de histórico nas stored procedures, `cod_projeto` imutável, qualificação de schema. | Convenções definidas pelo **autor do projeto**. **Não são a LGPD, não são lei e não vêm de fonte oficial**: valem para quem adota o padrão. |
+
+A v2 traz as regras na própria tela ("Ver as regras"), cada achado cita o id da regra e o porquê, e a severidade muda entre **tabela nova** (itens de migração são erro) e **legada** (aviso), deduzida do charset ou escolhida por você. As regras estão em [`docs/padroes-ddl-v2.md`](docs/padroes-ddl-v2.md), gerado do mesmo catálogo que o verificador usa (um teste falha se os dois divergirem), com a lista do que o verificador **não** consegue saber.
+
+**O que a v2 não prova.** As regras foram implementadas a partir do documento do autor e testadas contra os exemplos dele e contra casos escritos para cada uma, não contra um banco real. Onde o texto admitia duas leituras, o documento de regras diz qual eu adotei. Rotinas são lidas por heurística de tokens, não por um parser completo de SQL procedural.
+
 ## O problema
 
 Times pequenos guardam CPF, e-mail, endereço e até dado de saúde em tabelas sem saber o que têm. O inventário de dados que a LGPD pede (art. 37) nunca é feito porque começar dá preguiça. A Tarja lê o schema e entrega um primeiro rascunho em segundos.
@@ -138,7 +151,7 @@ As listas completas, com o motivo de cada erro e os falsos negativos de dado pes
 
 ## Limitações (o que a Tarja NÃO faz)
 
-- **Só MySQL, só `CREATE TABLE`.** `ALTER TABLE`, views, triggers, procedimentos e outros bancos (Postgres etc.) ficam de fora. O parser reconhece e lista o que ignorou.
+- **Só MySQL, e na camada de LGPD só `CREATE TABLE`.** `ALTER TABLE`, views, triggers, procedimentos e outros bancos (Postgres etc.) ficam de fora. O parser reconhece e lista o que ignorou. (A camada de padrões de DDL lê também procedures, functions, triggers e events.)
 - **Heurística por nome.** Não olha dado nenhum, só o schema: nome da coluna, tipo, `COMMENT` e nome da tabela. Coluna com nome opaco (`campo1`, `info`) só é pega se o `COMMENT` ajudar.
 - **Não sabe o que a aplicação faz.** Cifra, mascaramento e controle de acesso feitos no código não aparecem no schema.
 - **Não conhece o seu negócio.** Finalidade, base legal e retenção são seus.

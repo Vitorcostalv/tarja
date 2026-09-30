@@ -75,3 +75,9 @@ Execuções registradas em `docs/validation-runs-v2.md` (commit do motor da roda
 - O **motivo** passou a nomear a palavra que casou: `o nome da coluna contém "sanguineo" (saúde)` em vez de só `"saúde"`. Não mexe em pontuação nem em classificação; os números v2 continuam valendo.
 - A revisão "sem pista" ignora chave, data de sistema, credencial, estado e booleano (`colunaDeSistema`). Só muda a lista mostrada, não a classificação.
 - Interface, CSP, worker, 404 e OG estática.
+
+## Camada "Padrões de DDL (v2)" (nova funcionalidade, não mexe na classificação de LGPD)
+
+- Adicionada a pedido do autor, com as regras de DDL dele, **sem o nome da empresa** e com schema genérico. As regras de LGPD, os corpora e as medições acima **não mudaram**.
+- O parser ganhou campos novos (opções da tabela, índices, expressão de DEFAULT, charset/collate e ON UPDATE da coluna). Nenhuma métrica dos corpora v2 mudou: os testes do corpus continuam iguais.
+- Não há corpus de avaliação para a v2: ela verifica convenções exatas, então a prova são os testes por regra (casos que passam e casos que falham) e a cobertura do catálogo (um teste garante que um script variado exerce todas as regras).

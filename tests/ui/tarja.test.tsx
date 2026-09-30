@@ -190,3 +190,88 @@ describe("interface: exportação e privacidade", () => {
     expect(sessionStorage.length).toBe(0);
   });
 });
+
+describe("interface: camada Padrões de DDL (v2)", () => {
+  async function abrirPadroes() {
+    render(<Tarja />);
+    fireEvent.click(screen.getByRole("button", { name: /Padrões de DDL \(v2\)/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Usar script de exemplo" }));
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Achados" })).toBeTruthy());
+  }
+
+  it("a camada começa em LGPD e o seletor troca o que a página diz", () => {
+    render(<Tarja />);
+    const lgpd = screen.getByRole("button", { name: /^LGPD/ });
+    const v2 = screen.getByRole("button", { name: /Padrões de DDL \(v2\)/ });
+    expect(lgpd.getAttribute("aria-pressed")).toBe("true");
+    expect(v2.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(v2);
+    expect(v2.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText(/Isto não é LGPD e não é lei/)).toBeTruthy();
+    expect(screen.queryByText(/Isto é apoio, não parecer jurídico/)).toBeNull();
+    expect(screen.getByRole("button", { name: "Verificar" })).toBeTruthy();
+  });
+
+  it("lista as regras para o usuário ler, sem nome de empresa", () => {
+    render(<Tarja />);
+    fireEvent.click(screen.getByRole("button", { name: /Padrões de DDL \(v2\)/ }));
+    const resumo = screen.getByText(/Ver as regras dos Padrões de DDL \(v2\)/);
+    expect(resumo).toBeTruthy();
+    const catalogo = resumo.closest("details")!;
+    expect(catalogo.textContent).toMatch(/E01/);
+    expect(catalogo.textContent).toMatch(/DEFINER = root@localhost/);
+    expect(catalogo.textContent).toMatch(/cod_projeto é imutável/);
+    expect(catalogo.textContent).not.toMatch(/vtt|vt_/i);
+    expect(catalogo.textContent).toMatch(/Não são a LGPD, não são lei/);
+  });
+
+  it("o script de exemplo mostra erros e avisos com id da regra e o porquê", async () => {
+    await abrirPadroes();
+    expect(document.body.textContent).toMatch(/Erros/);
+    expect(document.body.textContent).toMatch(/A01/); // cod_projeto no SET
+    expect(document.body.textContent).toMatch(/S01/); // definer pessoal
+    expect(document.body.textContent).toMatch(/S05/); // DELETE sem archive
+    expect(document.body.textContent).toMatch(/D05/); // cod_projeto com DEFAULT
+    expect(screen.getAllByText("Por que esta regra existe").length).toBeGreaterThan(3);
+    expect(screen.getByRole("status").textContent).toMatch(/Verificação pronta: \d+ erros e \d+ avisos/);
+  });
+
+  it("trocar o modo nas opções muda a severidade (erro em nova, aviso em legada)", async () => {
+    await abrirPadroes();
+    const seletor = screen.getByLabelText(/Tabelas e rotinas são/) as HTMLSelectElement;
+    fireEvent.change(seletor, { target: { value: "nova" } });
+    await waitFor(() => expect(document.querySelector(".carimbo.cheio")).toBeTruthy());
+    const cheiosNova = document.querySelectorAll(".carimbo.cheio").length;
+    fireEvent.change(seletor, { target: { value: "legada" } });
+    await waitFor(() => expect(document.querySelectorAll(".carimbo.cheio").length).toBeLessThan(cheiosNova));
+  });
+
+  it("'só erros' filtra a lista", async () => {
+    await abrirPadroes();
+    const todos = document.querySelectorAll(".folha li.linha").length;
+    fireEvent.click(screen.getByLabelText(/Mostrar só erros/));
+    expect(document.querySelectorAll(".folha li.linha").length).toBeLessThan(todos);
+    for (const c of document.querySelectorAll(".folha li.linha .carimbo")) expect(c.classList.contains("cheio")).toBe(true);
+  });
+
+  it("exporta Markdown e JSON sem o DDL colado, e sem tocar na rede", async () => {
+    await abrirPadroes();
+    const clique = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    fireEvent.click(screen.getByRole("button", { name: "Markdown" }));
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    expect(blobs).toHaveLength(2);
+    const [md, json] = await Promise.all(blobs.map((b) => b.text()));
+    expect(md).toMatch(/Padrões de DDL \(v2\): resultado/);
+    expect(md).not.toMatch(/UPDATE app_loja|cod_pedido int(11)|DELETE FROM app_loja|valor_total double NOT NULL/); // o texto do DDL não entra no arquivo
+    expect(JSON.parse(json!).versao).toBe("v2");
+    expect(fetchEspiao).not.toHaveBeenCalled();
+    clique.mockRestore();
+  });
+
+  it("a mesma entrada vale nas duas camadas: trocar de camada reanalisa", async () => {
+    await abrirPadroes();
+    fireEvent.click(screen.getByRole("button", { name: /^LGPD/ }));
+    // O script de exemplo dos padrões tem tabelas; a camada LGPD as lê do mesmo texto.
+    await waitFor(() => expect(screen.getByRole("heading", { name: "O documento" })).toBeTruthy());
+  });
+});

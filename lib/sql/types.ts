@@ -40,6 +40,15 @@ export interface ParsedColumn {
   isPrimaryKey: boolean;
   autoIncrement: boolean;
   hasDefault: boolean;
+  /** Expressão do DEFAULT, como escrita (ex.: "'0.00'", "CURRENT_TIMESTAMP"). null se não há DEFAULT. */
+  defaultRaw: string | null;
+  unsigned: boolean;
+  /** CHARACTER SET / CHARSET declarado na coluna. */
+  charset: string | null;
+  /** COLLATE declarado na coluna. */
+  collate: string | null;
+  /** Expressão de ON UPDATE (ex.: "CURRENT_TIMESTAMP"). */
+  onUpdateRaw: string | null;
   comment: string | null;
   line: number;
 }
@@ -50,12 +59,32 @@ export interface ParsedForeignKey {
   refColumns: string[];
 }
 
+export interface ParsedIndex {
+  name: string | null;
+  unique: boolean;
+  /** "key" (KEY/INDEX), "fulltext" ou "spatial". A chave primária fica em ParsedTable.primaryKey. */
+  kind: "key" | "fulltext" | "spatial";
+  columns: string[];
+  line: number;
+}
+
+/** Opções depois do ")" do CREATE TABLE. null = não declarado. */
+export interface TableOptions {
+  engine: string | null;
+  charset: string | null;
+  collate: string | null;
+  /** AUTO_INCREMENT=n declarado na tabela. */
+  autoIncrement: string | null;
+}
+
 export interface ParsedTable {
   name: string;
   schema: string | null;
   columns: ParsedColumn[];
   primaryKey: string[];
   foreignKeys: ParsedForeignKey[];
+  indexes: ParsedIndex[];
+  options: TableOptions;
   comment: string | null;
   line: number;
 }

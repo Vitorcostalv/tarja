@@ -77,3 +77,10 @@ Retângulo de 2 px, Barlow Condensed 700, caixa alta, levemente inclinado em −
 - `lang="pt-BR"`; `aria-live="polite"` no resumo do resultado; erros de sintaxe listados com linha e trecho.
 - `prefers-reduced-motion`, `prefers-contrast` (aumenta a régua), e impressão revelando tudo.
 - Alvos de toque de 44 px no celular.
+
+## Camada "Padrões de DDL (v2)" (adicionada depois)
+
+- Mesma página, mesmo documento: um seletor de duas opções (`aria-pressed`) no topo escolhe LGPD ou padrões de DDL.
+- **Severidade sem laranja.** O laranja continua reservado a dado sensível. Na v2, **ERRO** é um carimbo cheio (tinta) e **AVISO** é um carimbo vazado; a palavra está escrita, então a cor nunca é a única pista.
+- Cada achado mostra o id da regra, o título, o detalhe e um "Por que esta regra existe" recolhido. As regras ficam num bloco recolhido com aviso de que não são lei.
+- O texto do aviso muda conforme a camada ("Isto não é LGPD e não é lei").
