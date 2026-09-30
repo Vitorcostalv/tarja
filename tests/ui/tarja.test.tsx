@@ -239,13 +239,14 @@ describe("interface: camada Padrões de DDL (v2)", () => {
   it("trocar o modo nas opções muda a severidade (erro em nova, aviso em legada)", async () => {
     await abrirPadroes();
     const seletor = screen.getByLabelText(/Tabelas e rotinas são/) as HTMLSelectElement;
+    const conta = () => document.querySelectorAll(".carimbo.cheio").length;
+    const base = conta(); // automático: as tabelas do exemplo são latin1, logo legadas
     fireEvent.change(seletor, { target: { value: "nova" } });
-    await waitFor(() => expect(document.querySelector(".carimbo.cheio")).toBeTruthy());
-    const cheiosNova = document.querySelectorAll(".carimbo.cheio").length;
+    await waitFor(() => expect(conta()).toBeGreaterThan(base));
+    const nova = conta();
     fireEvent.change(seletor, { target: { value: "legada" } });
-    await waitFor(() => expect(document.querySelectorAll(".carimbo.cheio").length).toBeLessThan(cheiosNova));
+    await waitFor(() => expect(conta()).toBeLessThan(nova));
   });
-
   it("'só erros' filtra a lista", async () => {
     await abrirPadroes();
     const todos = document.querySelectorAll(".folha li.linha").length;
