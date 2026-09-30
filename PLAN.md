@@ -10,7 +10,7 @@ Aprovado em 2026-09-30. Revisão feita por conta própria (o /autoplan não roda
 | 1 | "Lembrar meu schema" fora do MVP. Nada do schema em storage. |
 | 2 | Limite de entrada: 1 MB medido em **bytes UTF-8** (`TextEncoder`), não em caracteres. |
 | 3 | Domínio: `tarja-lgpd.vercel.app` (reconfirmar no deploy). Repo e marca: Tarja. |
-| 4 | Pasta: `C:\Users\jasmi\OneDrive\projetos\WorkSpace\tarja` (escolha do usuário; a condição "fora do OneDrive" foi abandonada). Risco: OneDrive sincroniza `node_modules`/`.next`. |
+| 4 | Pasta local fora do OneDrive (o projeto começou dentro dele e foi movido depois, a pedido). |
 | 5 | Commits só com a identidade do usuário (`Vitim` / `143446454+Vitorcostalv@users.noreply.github.com`). Sem `Co-Authored-By` e sem rodapé do Claude. |
 | 6 | Web Worker só se a medição justificar (~50 ms em 1 MB), medida também com CPU 4x mais lenta. |
 | 7 | Cobertura mínima em `lib/`: 90% linhas/funções/statements, 85% branches. Falha o comando. |
