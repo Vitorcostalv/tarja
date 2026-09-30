@@ -5,11 +5,15 @@ import { avaliarCorpus } from "../lib/lgpd/corpus-eval";
 import { relatorioMarkdown } from "../lib/lgpd/metrics";
 
 /**
- * Uso: npm run corpus:metrics            -> corpus de DESENVOLVIMENTO (pode ajustar regra olhando)
- *      npm run corpus:metrics -- --validacao  -> corpus de VALIDAÇÃO (só em checkpoints; registre a execução)
- *      npm run corpus:metrics -- --externo    -> corpus EXTERNO (schemas de terceiros: Sakila, Employees, WordPress)
+ * Uso: npm run corpus:metrics                -> corpus de DESENVOLVIMENTO (pode ajustar regra olhando)
+ *      npm run corpus:metrics -- --validacao -> corpus de VALIDAÇÃO (só em checkpoints; a execução é registrada)
+ *      npm run corpus:metrics -- --externo   -> corpus EXTERNO (schemas de terceiros: Sakila, Employees, WordPress)
  */
-const nome = process.argv.includes("--validacao") ? "validation" : process.argv.includes("--externo") ? "external" : "dev";
+const nome = process.argv.includes("--validacao")
+  ? "validation"
+  : process.argv.includes("--externo")
+    ? "external"
+    : "dev";
 const metricas = avaliarCorpus(loadCorpus(`corpus/${nome}`));
 
 mkdirSync("docs/results", { recursive: true });
@@ -18,39 +22,47 @@ writeFileSync(arquivo, relatorioMarkdown(nome, metricas), "utf8");
 
 const pct = (x: number | null) => (x === null ? "n/d" : `${(x * 100).toFixed(0)}%`);
 console.log(`corpus ${nome}: ${metricas.colunasAvaliadas} colunas avaliadas (${metricas.colunasDepende} "depende" fora)`);
-console.log(`binária: precisão ${pct(metricas.binaria.precisao)}, recall ${pct(metricas.binaria.recall)} (FN ${metricas.binaria.fn}, FP ${metricas.binaria.fp})`);
+console.log(
+  `binária: precisão ${pct(metricas.binaria.precisao)}, recall ${pct(metricas.binaria.recall)} (FN ${metricas.binaria.fn}, FP ${metricas.binaria.fp})`,
+);
 for (const c of metricas.porCategoria) {
-  console.log(`  ${c.categoria.padEnd(22)} suporte ${String(c.suporte).padStart(3)}  P ${pct(c.precisao).padStart(4)}  R ${pct(c.recall).padStart(4)}`);
+  console.log(
+    `  ${c.categoria.padEnd(22)} suporte ${String(c.suporte).padStart(3)}  P ${pct(c.precisao).padStart(4)}  R ${pct(c.recall).padStart(4)}`,
+  );
 }
 console.log(`relatório completo em ${arquivo}`);
 
 // Corpus de validação: cada execução fica registrada (quantas vezes foi usado, em qual commit).
 if (nome === "validation") {
   const registro = "docs/validation-runs.md";
-  const cabecalho =
-    "# Execuções do corpus de validação
-
-Este corpus é congelado: não se ajusta regra olhando para ele. Cada execução é registrada aqui.
-
-| # | Data | Commit | Recall binário | Precisão binária | FN de dado pessoal |
-|---:|---|---|---:|---:|---:|
-";
+  const cabecalho = [
+    "# Execuções do corpus de validação",
+    "",
+    "Este corpus é congelado: não se ajusta regra olhando para ele. Cada execução é registrada aqui.",
+    "",
+    "| # | Data | Commit | Recall binário | Precisão binária | FN de dado pessoal |",
+    "|---:|---|---|---:|---:|---:|",
+    "",
+  ].join("\n");
   if (!existsSync(registro)) writeFileSync(registro, cabecalho, "utf8");
-  const linhas = readFileSync(registro, "utf8").split("
-").filter((l) => /^\| \d+ \|/.test(l));
+  const numeradas = readFileSync(registro, "utf8")
+    .split("\n")
+    .filter((l) => /^\| \d+ \|/.test(l));
   let commit = "desconhecido";
   try {
     commit = execSync("git rev-parse --short HEAD", { encoding: "utf8" }).trim();
-    if (execSync("git status --porcelain lib corpus", { encoding: "utf8" }).trim() !== "") commit += " (+alterações não commitadas)";
+    if (execSync("git status --porcelain lib corpus", { encoding: "utf8" }).trim() !== "") {
+      commit += " (+alterações não commitadas)";
+    }
   } catch {
     /* fora de um repositório git */
   }
   const data = new Date().toISOString().slice(0, 10);
+  const n = numeradas.length + 1;
   appendFileSync(
     registro,
-    `| ${linhas.length + 1} | ${data} | ${commit} | ${pct(metricas.binaria.recall)} | ${pct(metricas.binaria.precisao)} | ${metricas.binaria.fn} |
-`,
+    `| ${n} | ${data} | ${commit} | ${pct(metricas.binaria.recall)} | ${pct(metricas.binaria.precisao)} | ${metricas.binaria.fn} |\n`,
     "utf8",
   );
-  console.log(`execução ${linhas.length + 1} da validação registrada em ${registro}`);
+  console.log(`execução ${n} da validação registrada em ${registro}`);
 }
