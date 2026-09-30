@@ -1,0 +1,58 @@
+# Gabarito: fintech_opaca (VALIDAÇÃO, congelado). Ver corpus/GABARITO.md.
+
+cad_cliente.id nid
+cad_cliente.nome idd
+cad_cliente.doc idd ?
+cad_cliente.campo1 idd
+cad_cliente.campo2 idd
+cad_cliente.campo3 out
+cad_cliente.end_cob loc
+cad_cliente.end_ent loc
+cad_cliente.cep loc
+cad_cliente.renda fin
+cad_cliente.limite fin
+cad_cliente.dt_cad nid
+cad_cliente.flg_ativo nid
+
+cad_conta.id nid
+cad_conta.id_cliente nid
+cad_conta.bco fin
+cad_conta.ag fin
+cad_conta.cc fin
+cad_conta.tp_conta nid
+cad_conta.saldo_atual fin
+cad_conta.dt_abertura nid
+
+mov_financeira.id nid
+mov_financeira.id_conta nid
+mov_financeira.vlr fin
+mov_financeira.dt_mov nid
+mov_financeira.hist out ?
+mov_financeira.cod_barras fin ?
+mov_financeira.favorecido idd
+mov_financeira.cpf_cnpj_fav idd ?
+
+apolices.id nid
+apolices.id_cliente nid
+apolices.beneficiario_nome idd
+apolices.beneficiario_cpf idd
+apolices.grau_parentesco out
+apolices.cid_causa sen:saude
+apolices.valor_cobertura fin ?
+apolices.dt_emissao nid
+@achado SENSIVEL_SEM_PROTECAO apolices.cid_causa
+
+tab_bancos.cod nid
+tab_bancos.nome nid
+tab_bancos.ispb nid
+
+tab_cidades.ibge nid
+tab_cidades.cidade nid
+tab_cidades.uf nid
+
+tb_log_ws.id nid
+tb_log_ws.endpoint nid
+tb_log_ws.ip_origem loc
+tb_log_ws.payload_req out ?
+tb_log_ws.dt_log nid
+@achado PESSOAL_EM_LOG tb_log_ws

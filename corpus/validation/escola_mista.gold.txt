@@ -1,0 +1,52 @@
+# Gabarito: escola_mista (VALIDAÇÃO, congelado). Ver corpus/GABARITO.md.
+
+students.student_id nid
+students.full_name idd
+students.birthdate out
+students.cpf idd
+students.guardian_name cri
+students.guardian_phone cri
+students.school_year cri
+students.health_notes sen:saude
+students.ethnicity sen:racial
+students.address loc
+students.zip loc
+students.photo out
+students.enrolled_at nid
+@achado INDICIO_MENOR students
+@achado SENSIVEL_SEM_PROTECAO students.health_notes
+@achado SENSIVEL_SEM_PROTECAO students.ethnicity
+@achado TEXTO_LIVRE students.health_notes
+
+cursos.codigo nid
+cursos.nome nid
+cursos.carga_horaria nid
+
+frequencia.id nid
+frequencia.student_id nid
+frequencia.data nid
+frequencia.presente out ?
+frequencia.justificativa out ?
+
+teachers.id nid
+teachers.name idd
+teachers.email idd
+teachers.phone idd
+teachers.salary fin
+teachers.degree out
+teachers.hired_on out
+teachers.created_at nid
+
+mensalidades.id nid
+mensalidades.aluno_id nid
+mensalidades.competencia nid
+mensalidades.valor nid
+mensalidades.vencimento nid
+mensalidades.pago_em nid
+mensalidades.forma_pagamento nid
+mensalidades.boleto_linha_digitavel fin
+mensalidades.cpf_pagador idd
+mensalidades.criado_em nid
+
+feriados.data nid
+feriados.nome nid

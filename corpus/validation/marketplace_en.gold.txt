@@ -1,0 +1,86 @@
+# Gabarito: marketplace_en (VALIDAÇÃO, congelado). Ver corpus/GABARITO.md.
+
+users.id nid
+users.first_name idd
+users.last_name idd
+users.email idd
+users.phone_number idd
+users.date_of_birth out
+users.gender out
+users.password_hash nid ?
+users.avatar_url out
+users.locale nid
+users.created_at nid
+users.deleted_at nid
+
+addresses.id nid
+addresses.user_id nid
+addresses.street loc
+addresses.house_no loc
+addresses.apartment loc
+addresses.city loc
+addresses.state loc
+addresses.zip_code loc
+addresses.country loc
+addresses.latitude loc
+addresses.longitude loc
+addresses.is_default nid
+@achado SEM_CICLO_DE_VIDA addresses
+
+sellers.id nid
+sellers.company_name nid
+sellers.tax_id idd ?
+sellers.contact_name idd
+sellers.contact_email idd ?
+sellers.contact_phone idd ?
+sellers.payout_iban fin ?
+sellers.created_at nid
+
+listings.id nid
+listings.seller_id nid
+listings.title nid
+listings.description nid
+listings.price nid
+listings.currency nid
+listings.stock nid
+listings.created_at nid
+
+orders.id nid
+orders.buyer_id nid
+orders.total_amount nid
+orders.currency nid
+orders.ip_address loc
+orders.shipping_zip loc
+orders.customer_notes nid ?
+orders.created_at nid
+@achado TEXTO_LIVRE orders.customer_notes
+
+payments.id nid
+payments.order_id nid
+payments.card_number fin
+payments.card_holder idd
+payments.card_expiry fin
+payments.cvv fin
+payments.billing_email idd
+payments.amount nid
+payments.status nid
+payments.created_at nid
+
+sessions.id nid
+sessions.user_id nid
+sessions.ip_address loc
+sessions.user_agent out ?
+sessions.token_hash nid ?
+sessions.created_at nid
+sessions.expires_at nid
+
+access_logs.id nid
+access_logs.user_id nid
+access_logs.ip_address loc
+access_logs.path nid
+access_logs.created_at nid
+@achado PESSOAL_EM_LOG access_logs
+
+countries.code nid
+countries.name nid
+countries.phone_prefix nid

@@ -1,0 +1,73 @@
+# Gabarito: rh_misto (VALIDAÇÃO, congelado). Ver corpus/GABARITO.md.
+
+Empregado.EmpId nid
+Empregado.NomeFunc idd
+Empregado.DtNasc out
+Empregado.CPF idd
+Empregado.Doc_Identidade idd
+Empregado.EMail idd
+Empregado.Tel idd
+Empregado.Celular idd
+Empregado.Salario fin
+Empregado.Cargo out
+Empregado.DtAdmissao out
+Empregado.Sindicalizado sen:sindical
+Empregado.Religiao sen:religiao
+Empregado.TipoSanguineo sen:saude
+Empregado.Deficiencia sen:saude
+Empregado.FotoCracha out
+Empregado.Obs out ?
+Empregado.CriadoEm nid
+@achado TEXTO_LIVRE Empregado.Obs
+@achado SENSIVEL_SEM_PROTECAO Empregado.Sindicalizado
+@achado SENSIVEL_SEM_PROTECAO Empregado.Religiao
+@achado SENSIVEL_SEM_PROTECAO Empregado.TipoSanguineo
+@achado SENSIVEL_SEM_PROTECAO Empregado.Deficiencia
+
+emp_dependents.id nid
+emp_dependents.emp_id nid
+emp_dependents.nome idd
+emp_dependents.nascimento out
+emp_dependents.cpf idd
+emp_dependents.tipo_parentesco out
+@achado SEM_CICLO_DE_VIDA emp_dependents
+
+vagas.id nid
+vagas.titulo nid
+vagas.descricao nid
+vagas.salario_oferecido nid
+vagas.area nid
+vagas.aberta nid
+vagas.criada_em nid
+
+candidatura.id nid
+candidatura.vaga_id nid
+candidatura.nome_candidato idd
+candidatura.email_candidato idd
+candidatura.fone idd
+candidatura.curriculo out
+candidatura.pretensao fin
+candidatura.genero out
+candidatura.raca_cor sen:racial
+candidatura.created_at nid
+@achado SENSIVEL_SEM_PROTECAO candidatura.raca_cor
+
+cfg_sistema.chave nid
+cfg_sistema.valor nid
+cfg_sistema.descricao nid
+
+tb_ponto_log.id nid
+tb_ponto_log.emp_id nid
+tb_ponto_log.batida_em out ?
+tb_ponto_log.origem nid
+tb_ponto_log.ip loc
+tb_ponto_log.geo_lat loc
+tb_ponto_log.geo_lng loc
+@achado PESSOAL_EM_LOG tb_ponto_log
+
+beneficios.id nid
+beneficios.emp_id nid
+beneficios.tipo nid
+beneficios.valor fin ?
+beneficios.inicio nid
+beneficios.created_at nid

@@ -1,0 +1,71 @@
+# Gabarito: clinica_legado (VALIDAÇÃO, congelado). Ver corpus/GABARITO.md.
+
+tb_paciente.cd_paciente nid
+tb_paciente.nm_paciente idd
+tb_paciente.dt_nasc out
+tb_paciente.nr_cpf idd
+tb_paciente.nr_rg idd
+tb_paciente.ds_email idd
+tb_paciente.nr_telefone idd
+tb_paciente.nr_celular idd
+tb_paciente.ds_endereco loc
+tb_paciente.nr_cep loc
+tb_paciente.nm_cidade loc
+tb_paciente.sg_uf loc
+tb_paciente.ds_sexo out
+tb_paciente.ds_raca sen:racial
+tb_paciente.st_hiv sen:saude
+tb_paciente.tp_sanguineo sen:saude
+tb_paciente.ds_alergia sen:saude
+tb_paciente.nm_responsavel cri
+tb_paciente.ds_observacao out ?
+tb_paciente.in_ativo nid
+tb_paciente.dt_cadastro nid
+@achado TEXTO_LIVRE tb_paciente.ds_observacao
+@achado SENSIVEL_SEM_PROTECAO tb_paciente.ds_raca
+@achado SENSIVEL_SEM_PROTECAO tb_paciente.st_hiv
+@achado SENSIVEL_SEM_PROTECAO tb_paciente.tp_sanguineo
+@achado SENSIVEL_SEM_PROTECAO tb_paciente.ds_alergia
+@achado INDICIO_MENOR tb_paciente
+
+tb_medico.cd_medico nid
+tb_medico.nm_medico idd
+tb_medico.nr_crm idd
+tb_medico.ds_especialidade out
+tb_medico.ds_email idd
+tb_medico.in_ativo nid
+@achado SEM_CICLO_DE_VIDA tb_medico
+
+tb_consulta.cd_consulta nid
+tb_consulta.cd_paciente nid
+tb_consulta.cd_medico nid
+tb_consulta.dt_consulta nid
+tb_consulta.ds_queixa sen:saude
+tb_consulta.ds_diagnostico sen:saude
+tb_consulta.cd_cid sen:saude
+tb_consulta.vl_consulta fin ?
+tb_consulta.dt_cadastro nid
+@achado SENSIVEL_SEM_PROTECAO tb_consulta.ds_queixa
+@achado SENSIVEL_SEM_PROTECAO tb_consulta.ds_diagnostico
+@achado SENSIVEL_SEM_PROTECAO tb_consulta.cd_cid
+
+tb_convenio.cd_convenio nid
+tb_convenio.nm_convenio nid
+tb_convenio.nr_cnpj idd ?
+tb_convenio.ds_contato nid ?
+
+tb_vacina.cd_vacina nid
+tb_vacina.cd_paciente nid
+tb_vacina.nm_vacina sen:saude
+tb_vacina.dt_aplicacao sen:saude
+tb_vacina.nr_lote nid
+tb_vacina.dt_cadastro nid
+@achado SENSIVEL_SEM_PROTECAO tb_vacina.nm_vacina
+@achado SENSIVEL_SEM_PROTECAO tb_vacina.dt_aplicacao
+
+tb_log_acesso.cd_log nid
+tb_log_acesso.cd_usuario nid
+tb_log_acesso.nr_ip loc
+tb_log_acesso.ds_acao nid
+tb_log_acesso.dt_log nid
+@achado PESSOAL_EM_LOG tb_log_acesso
