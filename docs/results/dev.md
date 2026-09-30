@@ -1,0 +1,83 @@
+# Resultado do corpus: dev
+
+Colunas: 397 (373 avaliadas, 24 com "depende" fora das métricas).
+Acerto exato de categoria: 98%.
+Subtipo de dado sensível certo: 26 de 29.
+
+| Categoria | Suporte | Precisão | Recall | F1 |
+|---|---:|---:|---:|---:|
+| Sensível | 29 | 100% | 93% | 96% |
+| Criança/adolescente (indício) | 5 | 83% | 100% | 91% |
+| Identificador direto | 58 | 100% | 97% | 98% |
+| Localização | 28 | 100% | 100% | 100% |
+| Financeiro | 27 | 100% | 96% | 98% |
+| Outro dado pessoal | 26 | 100% | 100% | 100% |
+| Não identificado | 200 | 98% | 100% | 99% |
+| **Dado pessoal vs não pessoal** (binária) | 173 | 99% | 97% | 98% |
+
+Contagens da métrica binária: VP 168, FP 1, FN 5. "depende" da Tarja conta como positivo.
+
+## Erros, com os falsos negativos de dado pessoal primeiro
+
+### Falsos negativos de dado pessoal (passou sem marcar) (5)
+
+- `clinica` · `pacientes.alergias`: gabarito **sensivel:saude**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `escola` · `bolsas.comprovante_url`: gabarito **financeiro**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `documentos_kyc.arquivo_frente_url`: gabarito **identificador_direto**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `documentos_kyc.arquivo_verso_url`: gabarito **identificador_direto**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `rh` · `atestados_medicos.arquivo_url`: gabarito **sensivel:saude**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+
+### Falsos positivos (marcou dado pessoal onde o gabarito diz que não é) (1)
+
+- `escola` · `responsaveis.responsavel_financeiro`: gabarito **nao_identificado**, a Tarja disse **crianca_adolescente** (alta). o nome da coluna contém "responsável legal"
+
+### Pessoal nos dois lados, categoria errada
+
+Nenhum.
+
+## Achados estruturais
+
+| Achado | VP | FP | FN | Precisão | Recall |
+|---|---:|---:|---:|---:|---:|
+| INDICIO_MENOR | 3 | 1 | 0 | 75% | 100% |
+| PESSOAL_EM_LOG | 5 | 0 | 0 | 100% | 100% |
+| SEM_CICLO_DE_VIDA | 7 | 0 | 0 | 100% | 100% |
+| SENSIVEL_SEM_PROTECAO | 27 | 0 | 3 | 100% | 90% |
+| TEXTO_LIVRE | 3 | 0 | 0 | 100% | 100% |
+
+### Achados que faltaram
+
+- `clinica` · SENSIVEL_SEM_PROTECAO · `pacientes.alergias`
+- `rh` · SENSIVEL_SEM_PROTECAO · `atestados_medicos.arquivo_url`
+- `rh` · SENSIVEL_SEM_PROTECAO · `atestados_medicos.observacao`
+
+### Achados a mais
+
+- `escola` · INDICIO_MENOR · `responsaveis`
+
+### Colunas com "depende" no gabarito (fora das métricas) (24)
+
+- `clinica` · `consultas.valor_cobrado`: gabarito **financeiro**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `clinica` · `pacientes.numero_carteirinha`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (baixa). o nome da coluna contém "possível dado de saúde"
+- `clinica` · `pacientes.observacoes`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `clinica` · `pacientes.plano_saude`: gabarito **sensivel:saude**, a Tarja disse **sensivel** (alta). o nome da coluna é "saúde"
+- `clinica` · `unidades.cnpj`: gabarito **identificador_direto**, a Tarja disse **identificador_direto** (media). o nome da coluna é "CNPJ"
+- `ecommerce` · `avaliacoes.comentario`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `ecommerce` · `clientes.senha_hash`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `ecommerce` · `logs_acesso.user_agent`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (alta). o nome da coluna é "identificador de dispositivo"
+- `ecommerce` · `pedidos.observacao`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `escola` · `notas.nota`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `escola` · `ocorrencias.descricao`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `escola` · `ocorrencias.providencias`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `escola` · `usuarios_portal.senha_hash`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `audit_log.payload`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `dispositivos.push_token`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `emprestimos.motivo_recusa`: gabarito **financeiro**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `emprestimos.taxa_juros_mes`: gabarito **financeiro**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `parceiros.cnpj`: gabarito **identificador_direto**, a Tarja disse **identificador_direto** (media). o nome da coluna é "CNPJ"
+- `fintech` · `transacoes.descricao`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `usuarios.pep`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `usuarios.pin_hash`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `fintech` · `usuarios.senha_hash`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `rh` · `atestados_medicos.observacao`: gabarito **sensivel:saude**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `rh` · `ponto_registros.registrado_em`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
