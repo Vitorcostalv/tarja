@@ -29,7 +29,7 @@ describe("vercel.json: cabeçalhos de segurança", () => {
 
   it("CSP começa negando tudo (default-src 'none') e libera só o necessário", () => {
     expect(diretiva("default-src")).toBe("default-src 'none'");
-    expect(diretiva("script-src")).toMatch(/^script-src 'self'( 'sha256-[A-Za-z0-9+/=]+')+$/);
+    expect(diretiva("script-src")).toBe("script-src 'self'"); // sem hash e sem inline
     expect(diretiva("style-src")).toBe("style-src 'self'");
     expect(diretiva("img-src")).toBe("img-src 'self' data:");
     expect(diretiva("font-src")).toBe("font-src 'self'");
@@ -69,9 +69,9 @@ describe("csp: funções", () => {
     expect(hashDeScript("")).toBe("'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='");
   });
 
-  it("montarCsp deduplica e ordena os hashes", () => {
-    const a = montarCsp(["'sha256-b'", "'sha256-a'", "'sha256-b'"]);
-    expect(diretivaDe(a, "script-src")).toBe("script-src 'self' 'sha256-a' 'sha256-b'");
+  it("montarCsp não depende de build: a CSP é sempre a mesma", () => {
+    expect(montarCsp()).toBe(montarCsp());
+    expect(diretivaDe(montarCsp(), "script-src")).toBe("script-src 'self'");
   });
 });
 
@@ -97,11 +97,20 @@ describe("CSP contra o build gerado (out/)", () => {
     expect(true).toBe(true);
   });
 
-  it.skipIf(!temBuild)("todo script inline do build tem o hash na CSP, e a CSP não tem hash velho", () => {
-    const atuais = new Set(htmls("out").flatMap((f) => scriptsInline(readFileSync(f, "utf8")).map(hashDeScript)));
-    const naCsp = new Set(diretiva("script-src").split(" ").filter((t) => t.startsWith("'sha256-")));
-    expect([...atuais].filter((h) => !naCsp.has(h)), "scripts inline sem hash na CSP").toEqual([]);
-    expect([...naCsp].filter((h) => !atuais.has(h)), "hashes velhos na CSP (rode npm run build)").toEqual([]);
+  it.skipIf(!temBuild)("nenhuma página tem script inline: todos viraram arquivo do próprio site", () => {
+    let externalizados = 0;
+    for (const f of htmls("out")) {
+      const html = readFileSync(f, "utf8");
+      expect(scriptsInline(html), `${f} ainda tem script inline (rode npm run build)`).toEqual([]);
+      externalizados += [...html.matchAll(/<script src="\/_next\/static\/inline\/[0-9a-f]{16}\.js"/g)].length;
+    }
+    expect(externalizados).toBeGreaterThan(0);
+  });
+
+  it.skipIf(!temBuild)("o conteúdo dos scripts externalizados existe em out/_next/static/inline", () => {
+    const arquivos = readdirSync("out/_next/static/inline");
+    expect(arquivos.length).toBeGreaterThan(0);
+    for (const a of arquivos) expect(readFileSync(join("out/_next/static/inline", a), "utf8").length).toBeGreaterThan(0);
   });
 
   it.skipIf(!temBuild)("o HTML gerado não tem nada que a CSP bloquearia: style inline, handler inline, javascript:", () => {
