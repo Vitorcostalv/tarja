@@ -2,7 +2,7 @@
 
 **Raio-X de LGPD para schemas SQL.** Você cola o `CREATE TABLE` do MySQL, a Tarja diz quais colunas guardam dado pessoal ou sensível, sugere como proteger e monta um rascunho do inventário de dados.
 
-> Link do deploy: _em breve_ · Demonstração sem colar nada: abra com `#exemplo` no fim do endereço.
+> **Em produção: https://tarja-lgpd.vercel.app** · Demonstração sem colar nada: https://tarja-lgpd.vercel.app/#exemplo
 
 ![A Tarja com o schema de exemplo: nomes de coluna cobertos por tarja preta, uma coluna sensível com borda laranja dupla, e o detalhe aberto](docs/assets/tarja-exemplo.png)
 
