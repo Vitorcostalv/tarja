@@ -20,6 +20,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run build   # gera o out/ e a CSP do vercel.json; os testes de CSP conferem os hashes contra ele
+      - run: git diff --exit-code vercel.json   # vercel.json commitado tem que ser o que o build gera
       - run: npm test
 
   lenta:
@@ -33,4 +35,5 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm run test:slow

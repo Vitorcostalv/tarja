@@ -75,8 +75,9 @@ describe("segurança: varredura estática do código da aplicação", () => {
   it("nenhuma URL absoluta http(s) no código da aplicação (fora de comentários)", () => {
     const re = /["'`]https?:\/\//;
     const achados = todos.filter((f) => re.test(semComentarios(readFileSync(f, "utf8"))));
-    // lib/lgpd/rules/fontes.ts guarda URLs das fontes oficiais como TEXTO para citação; nunca são requisitadas.
-    expect(achados.filter((f) => !f.replace(/\\/g, "/").endsWith("lib/lgpd/rules/fontes.ts"))).toEqual([]);
+    // fontes.ts guarda as URLs das fontes oficiais e links.ts os links de navegação (o usuário clica e vai): são TEXTO, nunca requisitados.
+    const permitidos = ["lib/lgpd/rules/fontes.ts", "lib/ui/links.ts"];
+    expect(achados.filter((f) => !permitidos.some((p) => f.replace(/\\/g, "/").endsWith(p)))).toEqual([]);
   });
 });
 

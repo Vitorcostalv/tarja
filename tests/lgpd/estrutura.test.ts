@@ -178,6 +178,13 @@ describe("'não identificado' diz que é das regras", () => {
     expect(colunasSemClassificacao(analise).map((c) => c.coluna)).toEqual(["campo1", "cor"]);
   });
 
+  it("a revisão ignora chave, data de sistema, credencial, estado e booleano", () => {
+    const { analise } = analisarDdl("CREATE TABLE produtos (id INT, criado_em DATETIME, senha_hash CHAR(60), ativo TINYINT(1), status VARCHAR(5), campo1 VARCHAR(20));");
+    expect(colunasSemClassificacao(analise).map((c) => c.coluna)).toEqual(["campo1"]);
+    const r = gerarRelatorio(analise);
+    expect(resumir(r).semClassificacao).toBe(1);
+  });
+
   it("relatório em Markdown e CSV usa o rótulo e avisa para revisar", () => {
     const r = gerarRelatorio(analisarDdl("CREATE TABLE produtos (id INT, campo1 VARCHAR(20));").analise);
     expect(paraMarkdown(r)).toMatch(/Não identificado pelas regras/);

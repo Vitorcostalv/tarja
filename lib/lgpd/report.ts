@@ -1,4 +1,6 @@
-import { VERSAO_REGRAS } from "./rules/pt-br";
+import { DICIONARIO } from "./classify";
+import { VERSAO_REGRAS, VOCAB_FORA_DO_CONTEXTO } from "./rules/pt-br";
+import { tokens as tokensDe } from "./text";
 import { BASE_LEGAL_POR_CATEGORIA, FINALIDADE_PADRAO, RETENCAO_PADRAO, TECNICAS, sugerirProtecao } from "./rules/protecao";
 import type { Achado, Analise, Categoria, Confianca, Pessoal } from "./types";
 
@@ -30,15 +32,21 @@ export function rotuloCategoria(codigo: string): string {
   return (ROTULO_CATEGORIA as Record<string, string>)[codigo] ?? codigo;
 }
 
+/** Chave, data de sistema, credencial, estado ou booleano: nunca é o "dado pessoal escondido" que a revisão procura. */
+export function colunaDeSistema(coluna: string, tipoSql: string): boolean {
+  if (/^(tinyint\(1\)|bool|boolean|bit)/i.test(tipoSql.trim())) return true;
+  return tokensDe(coluna, DICIONARIO).some((t) => VOCAB_FORA_DO_CONTEXTO.has(t));
+}
+
 /**
- * Colunas em que nenhuma regra casou. "Não identificado pelas regras" quer dizer "a Tarja não achou pista",
+ * Colunas em que nenhuma regra casou (fora as de sistema, que a revisão não precisa olhar). "Não identificado pelas regras" quer dizer "a Tarja não achou pista",
  * não "não tem dado pessoal": o usuário precisa revisar estas.
  */
 export function colunasSemClassificacao(analise: Analise): Array<{ tabela: string; coluna: string; tipoSql: string }> {
   const out: Array<{ tabela: string; coluna: string; tipoSql: string }> = [];
   for (const t of analise.tabelas) {
     for (const c of t.colunas) {
-      if (c.origem === "regra" && c.ruleId === null && c.categoria === "nao_identificado") {
+      if (c.origem === "regra" && c.ruleId === null && c.categoria === "nao_identificado" && !colunaDeSistema(c.coluna, c.tipoSql)) {
         out.push({ tabela: c.tabela, coluna: c.coluna, tipoSql: c.tipoSql });
       }
     }
@@ -152,6 +160,6 @@ export function resumir(r: Relatorio): Resumo {
     altoRisco: r.linhas.filter((l) => l.altoRisco).length,
     corrigidasAMao: r.linhas.filter((l) => l.origem === "manual").length,
     achados: r.achados.length,
-    semClassificacao: r.linhas.filter((l) => l.semRegra && l.categoria === "nao_identificado").length,
+    semClassificacao: r.linhas.filter((l) => l.semRegra && l.categoria === "nao_identificado" && !colunaDeSistema(l.coluna, l.tipoSql)).length,
   };
 }

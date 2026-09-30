@@ -1,3 +1,5 @@
-export default function Home() {
-  return <main>Tarja (em construção)</main>;
+import { Tarja } from "../components/Tarja";
+
+export default function Pagina() {
+  return <Tarja />;
 }

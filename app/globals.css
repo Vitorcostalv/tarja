@@ -1,0 +1,641 @@
+@import "tailwindcss";
+
+/* Tokens do DESIGN.md. Papel, tinta e UMA cor de destaque (sinal), usada só para dado sensível. */
+@theme {
+  --color-papel: #f3efe4;
+  --color-papel-2: #e9e3d2;
+  --color-tinta: #15130f;
+  --color-tinta-suave: #4a453c;
+  --color-mudo: #6b6558;
+  --color-linha: #8a826f;
+  --color-tarja: #0e0d0b;
+  --color-sinal: #ff6b1a;
+  --color-sinal-texto: #b93c00;
+
+  --font-titulo: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-texto: "Source Serif 4", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
+:root {
+  color-scheme: light;
+  --foco: 0 0 0 2px var(--color-papel), 0 0 0 4px var(--color-tinta);
+}
+
+html {
+  background: var(--color-papel);
+  color: var(--color-tinta);
+  font-family: var(--font-texto);
+  font-size: 100%;
+  line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-papel);
+  min-height: 100vh;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+a {
+  color: var(--color-tinta);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.pagina {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 0 1rem 4.5rem;
+}
+
+.rotulo {
+  font-family: var(--font-titulo);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-mudo);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.regua {
+  border: 0;
+  border-top: 1px solid var(--color-linha);
+  margin: 2rem 0;
+}
+
+/* ---------- cabeçalho ---------- */
+.cabecalho {
+  padding: 2.25rem 0 1.5rem;
+  border-bottom: 3px solid var(--color-tinta);
+}
+.cabecalho h1 {
+  font-size: clamp(3rem, 12vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.cabecalho .sub {
+  font-family: var(--font-titulo);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1.05rem;
+  margin: 0.25rem 0 0;
+}
+/* O nome fica legível; a tarja passa por baixo dele, como um grifo de documento censurado. */
+.cabecalho .titulo-marca {
+  display: inline-block;
+  padding-bottom: 0.02em;
+  border-bottom: 0.2em solid var(--color-tarja);
+}
+
+.aviso {
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  background: var(--color-papel-2);
+  border-left: 4px solid var(--color-tinta);
+  font-size: 1rem;
+}
+.aviso strong {
+  font-weight: 600;
+}
+.aviso ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+/* ---------- entrada ---------- */
+.entrada label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.entrada textarea {
+  width: 100%;
+  min-height: 15rem;
+  resize: vertical;
+  background: #fbf9f2;
+  color: var(--color-tinta);
+  border: 2px solid var(--color-tinta-suave);
+  padding: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.botao {
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 1.1rem;
+  background: transparent;
+  color: var(--color-tinta);
+  border: 2px solid var(--color-tinta);
+  cursor: pointer;
+}
+.botao:hover {
+  background: var(--color-tinta);
+  color: var(--color-papel);
+}
+.botao-principal {
+  background: var(--color-tinta);
+  color: var(--color-papel);
+}
+.botao-principal:hover {
+  background: var(--color-papel);
+  color: var(--color-tinta);
+}
+.botao[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.botao-mini {
+  min-height: 2rem;
+  font-size: 0.875rem;
+  padding: 0.1rem 0.6rem;
+}
+
+.mensagem {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--color-tinta);
+  background: #fbf9f2;
+  font-size: 1rem;
+}
+.mensagem strong {
+  font-weight: 600;
+}
+.mensagem pre {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- resumo ---------- */
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0;
+  border: 2px solid var(--color-tinta);
+  margin: 1.25rem 0 0;
+}
+.resumo > div {
+  padding: 0.6rem 0.8rem;
+  border-right: 1px solid var(--color-linha);
+  border-bottom: 1px solid var(--color-linha);
+}
+.resumo dt {
+  font-family: var(--font-titulo);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-mudo);
+}
+.resumo dd {
+  margin: 0;
+  font-family: var(--font-titulo);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.resumo .sinal dd {
+  color: var(--color-sinal-texto);
+}
+
+.desempenho {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-tinta);
+  font-size: 1rem;
+}
+
+/* ---------- painel de revisão ---------- */
+.revisao {
+  margin-top: 1.25rem;
+  border: 2px dashed var(--color-tinta);
+  padding: 0.9rem 1rem;
+  background: #fbf9f2;
+}
+.revisao h2 {
+  font-size: 1.25rem;
+}
+.revisao ul {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.revisao li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-linha);
+  padding-top: 0.35rem;
+}
+
+/* ---------- o documento ---------- */
+.documento {
+  margin-top: 2rem;
+}
+.folha {
+  background: #fbf9f2;
+  border: 2px solid var(--color-tinta);
+  margin-bottom: 1.75rem;
+}
+.folha > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-bottom: 2px solid var(--color-tinta);
+  background: var(--color-papel-2);
+}
+.folha h3 {
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.folha ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.linha {
+  border-bottom: 1px solid var(--color-linha);
+}
+.linha:last-child {
+  border-bottom: 0;
+}
+.linha-topo {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1.2fr) minmax(7rem, 0.8fr) minmax(0, 2fr) auto;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  padding: 0.45rem 1rem;
+}
+@media (max-width: 720px) {
+  .linha-topo {
+    grid-template-columns: 1fr auto;
+  }
+  .linha-topo .tipo {
+    grid-column: 1 / -1;
+  }
+}
+
+.nome-coluna {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+.tipo {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-mudo);
+  overflow-wrap: anywhere;
+}
+
+/* A tarja: botão com o nome da coluna dentro, pintado da cor do fundo. O texto está no DOM. */
+.tarja {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  text-align: left;
+  min-height: 2.75rem;
+  width: 100%;
+  padding: 0.2rem 0.5rem;
+  background: var(--color-tarja);
+  color: var(--color-tarja);
+  border: 2px solid var(--color-tarja);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.tarja[aria-expanded="true"],
+.tarja:focus-visible,
+.tarja:hover {
+  background: transparent;
+  color: var(--color-tinta);
+}
+.tarja:focus-visible {
+  box-shadow: var(--foco);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tarja {
+    transition: background-color 120ms linear, color 120ms linear;
+  }
+}
+/* Sensível: borda dupla em laranja. É o único uso da cor de destaque. */
+.tarja.sensivel {
+  border: 3px double var(--color-sinal);
+  box-shadow: inset 0 0 0 2px var(--color-tarja);
+}
+.tarja.sensivel[aria-expanded="true"],
+.tarja.sensivel:focus-visible,
+.tarja.sensivel:hover {
+  box-shadow: none;
+}
+.tarja.sensivel:focus-visible {
+  box-shadow: var(--foco);
+}
+
+.carimbo {
+  display: inline-block;
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  padding: 0.2rem 0.45rem;
+  border: 2px solid var(--color-tinta);
+  color: var(--color-tinta);
+  background: transparent;
+  white-space: nowrap;
+}
+.carimbo.cinza {
+  border-color: var(--color-mudo);
+  color: var(--color-mudo);
+  border-style: dashed;
+}
+.carimbo.sensivel {
+  border: 3px double var(--color-sinal-texto);
+  color: var(--color-sinal-texto);
+}
+.carimbo.pequeno {
+  font-size: 0.6875rem;
+  padding: 0.1rem 0.35rem;
+}
+
+.detalhe {
+  background: var(--color-papel-2);
+  border-top: 1px solid var(--color-linha);
+  padding: 0.9rem 1rem 1.1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+.detalhe dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+.detalhe dt {
+  font-family: var(--font-titulo);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-mudo);
+  padding-top: 0.15rem;
+}
+.detalhe dd {
+  margin: 0;
+}
+.detalhe h4 {
+  font-family: var(--font-titulo);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.25rem;
+}
+.detalhe ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+.detalhe li {
+  margin-bottom: 0.3rem;
+}
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem;
+}
+.campos label {
+  display: grid;
+  gap: 0.2rem;
+}
+.campos input,
+.campos textarea,
+.detalhe select {
+  font-family: var(--font-texto);
+  font-size: 1rem;
+  padding: 0.4rem 0.5rem;
+  border: 2px solid var(--color-tinta-suave);
+  background: #fbf9f2;
+  color: var(--color-tinta);
+  min-height: 2.5rem;
+  width: 100%;
+}
+.nota {
+  font-size: 0.9375rem;
+  color: var(--color-tinta-suave);
+}
+
+/* ---------- achados ---------- */
+.achados {
+  margin-top: 2rem;
+}
+.achados h2,
+.documento > h2,
+.exportar h2,
+.verificar h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.achado {
+  border: 2px solid var(--color-tinta);
+  background: #fbf9f2;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+.achado h3 {
+  font-family: var(--font-texto);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0.35rem 0;
+}
+.achado p {
+  margin: 0.3rem 0;
+}
+
+/* ---------- exportar e relatório ---------- */
+.exportar {
+  margin-top: 2rem;
+}
+.relatorio {
+  margin-top: 1rem;
+  overflow-x: auto;
+  border: 2px solid var(--color-tinta);
+  background: #fbf9f2;
+}
+.relatorio table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 64rem;
+  font-size: 0.875rem;
+}
+.relatorio th,
+.relatorio td {
+  border: 1px solid var(--color-linha);
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+  text-align: left;
+}
+.relatorio th {
+  font-family: var(--font-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--color-papel-2);
+}
+.relatorio td.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* ---------- como verificar e rodapé ---------- */
+.verificar ol {
+  padding-left: 1.3rem;
+}
+.verificar li {
+  margin-bottom: 0.4rem;
+}
+.rodape {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 3px solid var(--color-tinta);
+  font-size: 0.9375rem;
+}
+
+.sem-margem {
+  margin: 0;
+}
+.entrada-topo {
+  margin-top: 1.75rem;
+}
+.resultado:focus {
+  outline: none;
+}
+.detalhe-achados {
+  border-top: 2px solid var(--color-tinta);
+}
+[hidden] {
+  display: none !important;
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- contraste alto do sistema ---------- */
+@media (prefers-contrast: more) {
+  .linha,
+  .resumo > div,
+  .relatorio th,
+  .relatorio td {
+    border-color: var(--color-tinta);
+  }
+}
+@media (forced-colors: active) {
+  .tarja {
+    background: Canvas;
+    color: CanvasText;
+    border: 2px solid CanvasText;
+  }
+}
+
+/* ---------- impressão: a tarja NUNCA imprime escondendo o conteúdo ---------- */
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+  .nao-imprimir {
+    display: none !important;
+  }
+  .tarja,
+  .tarja[aria-expanded] {
+    background: transparent !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+  .detalhe {
+    display: none !important;
+  }
+  .relatorio,
+  .relatorio[hidden] {
+    display: block !important;
+    overflow: visible;
+    border: 0;
+  }
+  .relatorio table {
+    min-width: 0;
+    font-size: 8pt;
+  }
+  .folha,
+  .achado {
+    break-inside: avoid;
+  }
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+}
