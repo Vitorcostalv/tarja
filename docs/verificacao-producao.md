@@ -39,3 +39,11 @@ Nenhum erro de console além dessas tentativas provocadas. Nenhuma violação de
 ## O que isto não prova
 
 Que não exista nenhum bug de hidratação em Safari ou Firefox (não testados), nem que a Vercel não registre o acesso à página em si (logs de borda da hospedagem existem; o **conteúdo do schema** nunca chega lá).
+
+## Segunda verificação: depois de publicar a camada "Padrões de DDL (v2)"
+
+Mesmo teste, no mesmo Edge real, em https://tarja-lgpd.vercel.app, nas duas camadas:
+
+- `curl -I`: CSP com `connect-src 'none'` e `script-src 'self'` (igual à anterior).
+- Camada **Padrões de DDL (v2)**: script de exemplo verificado (2 tabelas, 2 rotinas, 6 erros, 10 avisos). Nenhuma requisição para fora do próprio site, nenhuma violação de CSP, nenhum erro de console.
+- Camada **LGPD**: schema colado e analisado sem requisição nova; `fetch`, `XMLHttpRequest` e `WebSocket` bloqueados pela CSP; `sendBeacon` retorna `true` só porque enfileira (a CSP registra a violação e nenhuma requisição sai). URL sem hash nem query, storage vazio.
