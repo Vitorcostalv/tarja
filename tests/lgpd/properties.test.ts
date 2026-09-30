@@ -7,7 +7,8 @@ import type { ParseResult, ParsedTable } from "../../lib/sql/types";
 
 // Só corpora que estão inteiros no repositório (o externo depende de `npm run corpus:fetch`).
 const CORPUS = [...loadCorpus("corpus/dev"), ...loadCorpus("corpus/validation"), ...loadCorpus("corpus/validation-v2")];
-const TABELAS: ParsedTable[] = CORPUS.flatMap((s) => parseDdl(s.sql).tables);
+// Uma tabela por nome: corpora diferentes repetem nomes (documentos_kyc, clientes...) e a chave "tabela.coluna" colidiria.
+const TABELAS: ParsedTable[] = [...new Map(CORPUS.flatMap((s) => parseDdl(s.sql).tables).map((t) => [t.name, t] as const)).values()];
 
 const VALID = `CREATE TABLE \`clientes\` (id INT, nome VARCHAR(100) COMMENT 'nome, completo', cpf CHAR(14), obs TEXT);
 CREATE TABLE logs (id INT, ip VARCHAR(45), email VARCHAR(80));`;

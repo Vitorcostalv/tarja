@@ -101,6 +101,13 @@ export const TABELA_CRIANCA: ReadonlySet<string> = new Set(["aluno", "student", 
 // ---------- regras ----------
 
 const P = (...palavras: string[]): string[] => palavras;
+
+/** Coisas que têm nome mas não são pessoas. "nome" + uma delas não é nome de pessoa. */
+const NOMES_DE_COISAS: readonly string[] = [
+  "produto", "product", "empresa", "company", "categoria", "category", "marca", "brand", "loja", "store", "curso", "course",
+  "departamento", "department", "servico", "service", "plano", "plan", "arquivo", "file", "projeto", "project",
+  "campanha", "campaign", "evento", "event", "sistema", "system", "estado", "state", "pais", "country",
+];
 const LEI_PESSOAL = ["LGPD-5-I"];
 const LEI_SENSIVEL = ["LGPD-5-II", "LGPD-11"];
 const LEI_FINANCEIRO = ["LGPD-5-I", "LGPD-5-II"];
@@ -113,11 +120,30 @@ export const REGRAS: readonly Regra[] = [
   {
     id: "nid.chave",
     categoria: "nao_identificado",
-    padroes: [P("id"), P("codigo")],
+    padroes: [P("id")],
     peso: 9,
-    rotulo: "chave ou código interno",
+    rotulo: "chave interna",
     fontes: LEI_PESSOAL,
     nota: "Chave substituta ou estrangeira não identifica ninguém sozinha. Quem tem a tabela de origem consegue ligar à pessoa.",
+  },
+  {
+    id: "nid.codigo",
+    categoria: "nao_identificado",
+    padroes: [P("codigo")],
+    peso: 5,
+    rotulo: "código interno",
+    fontes: LEI_PESSOAL,
+    nota: "\"cd_\" costuma ser chave, mas também pode ser o código de um dado sensível (cd_cid). Só vira chave de verdade com uma FK declarada.",
+  },
+  {
+    id: "nid.nome_de_coisa",
+    categoria: "nao_identificado",
+    padroes: NOMES_DE_COISAS.flatMap((t) => [P("nome", t), P(t, "nome"), P("name", t), P(t, "name")]),
+    peso: 8,
+    pessoal: "nao",
+    rotulo: "nome de coisa (produto, empresa, categoria...)",
+    fontes: LEI_PESSOAL,
+    nota: "Nome de produto, empresa, categoria e similares não é nome de pessoa.",
   },
   {
     id: "nid.pj",
@@ -241,12 +267,13 @@ export const REGRAS: readonly Regra[] = [
       P("nome", "completo"), P("nome", "mae"), P("nome", "pai"),
     ],
     peso: 3,
+    fraca: true,
     tipos: ["texto"],
     contexto: { pessoa: 4, nao_pessoa: -9 },
     evidenciaPessoa: true,
     rotulo: "nome",
     fontes: LEI_PESSOAL,
-    nota: "\"nome\" é dado pessoal em tabela de pessoas (clientes.nome) e não é em tabela de coisas (produtos.nome). Por isso o contexto da tabela pesa.",
+    nota: "\"nome\" é dado pessoal em tabela de pessoas (clientes.nome) e não é em tabela de coisas (produtos.nome). Por isso o contexto da tabela pesa. É uma regra genérica: só vale quando nenhuma regra mais específica (cidade, produto, responsável...) casa com a coluna.",
   },
   {
     id: "idd.titular",
@@ -678,7 +705,7 @@ export const REGRAS: readonly Regra[] = [
     tipos: ["texto", "booleano"],
     rotulo: "sexo ou gênero",
     fontes: LEI_PESSOAL,
-    nota: "Sexo ou gênero (masculino/feminino) é dado pessoal, mas NÃO é sensível pela lei.",
+    nota: "Sexo ou gênero (masculino/feminino) é dado pessoal, mas NÃO é sensível pela lei. Já orientação sexual e vida sexual são sensíveis (art. 5º, II).",
   },
   {
     id: "out.estado_civil",
@@ -736,7 +763,7 @@ export const REGRAS: readonly Regra[] = [
     peso: 6,
     rotulo: "foto",
     fontes: LEI_PESSOAL,
-    nota: "Foto é dado pessoal. Só seria biometria (sensível) se for processada para identificar a pessoa, como um vetor facial.",
+    nota: "Foto é dado pessoal comum. Só vira biometria (sensível) se houver indício de uso para identificar a pessoa, como biometria ou reconhecimento facial no nome ou no COMMENT da coluna.",
   },
   {
     id: "out.dispositivo",
@@ -754,7 +781,7 @@ export const REGRAS: readonly Regra[] = [
 
 /** Coluna que registra quando a linha passou a existir ou quando o evento ocorreu. */
 export const VOCAB_CRIACAO: ReadonlySet<string> = new Set([
-  "criado", "criada", "criacao", "created", "cadastro", "cadastrado", "inserido", "inserted", "registrado", "registro",
+  "criado", "criada", "criacao", "created", "create", "creation", "registered", "joined", "added", "cadastrada", "cadastro", "cadastrado", "inserido", "inserted", "registrado", "registro",
   "abertura", "emissao", "ocorreu", "ocorrencia", "tentativa", "batida", "lancado", "enrolled", "timestamp", "paid",
   "pago", "sent", "enviado",
 ]);
@@ -775,3 +802,22 @@ export const VOCAB_PROTECAO: ReadonlySet<string> = new Set([
   "hash", "criptografado", "criptografada", "cript", "cifrado", "cifrada", "encrypted", "enc", "sha", "sha256", "bcrypt",
   "argon", "salt", "token", "tokenizado", "pseudonimizado",
 ]);
+
+// ---------- contexto da tabela: coluna sem regra em tabela que tem identificador de pessoa ----------
+
+/** Coluna que, mesmo sem regra, NÃO herda o contexto da tabela (sistema, credencial, estado). */
+export const VOCAB_FORA_DO_CONTEXTO: ReadonlySet<string> = new Set([
+  // sistema e ciclo de vida
+  "criado", "criada", "criacao", "created", "create", "creation", "atualizado", "atualizada", "updated", "update",
+  "modificado", "modified", "deleted", "excluido", "removido", "versao", "version", "timestamp",
+  "registered", "registrado", "activated", "ativado", "approved", "aprovado", "enviado", "sent",
+  // credenciais
+  "senha", "password", "pass", "hash", "token", "salt", "secret", "segredo",
+  // estado e configuração
+  "status", "ativo", "active", "flag", "tipo", "type", "situacao", "locale", "idioma", "ordem", "order", "posicao",
+  // chaves
+  "id", "codigo", "uuid", "guid",
+]);
+
+/** Indício de criança/adolescente no NOME DA TABELA (ou de cadastro de responsável), para somar à data de nascimento. */
+export const TABELA_ESCOLA_OU_RESPONSAVEL: ReadonlySet<string> = new Set(["escola", "school", "colegio", "turma", "matricula", "responsavel", "guardian"]);

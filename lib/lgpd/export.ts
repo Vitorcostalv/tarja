@@ -1,4 +1,4 @@
-import { RELATORIO_VERSAO, resumir, type LinhaRelatorio, type Relatorio } from "./report";
+import { RELATORIO_VERSAO, resumir, rotuloCategoria, type LinhaRelatorio, type Relatorio } from "./report";
 import type { Achado, Confianca, Gravidade, Pessoal } from "./types";
 
 /**
@@ -30,7 +30,7 @@ function linhaValida(x: unknown): x is LinhaRelatorio {
     (x.subtipo === null || str(x.subtipo)) &&
     typeof x.sensivel === "boolean" && str(x.pessoal) && PESSOAL.includes(x.pessoal) &&
     typeof x.altoRisco === "boolean" && str(x.confianca) && CONFIANCA.includes(x.confianca) &&
-    str(x.motivo) && (x.origem === "regra" || x.origem === "manual") &&
+    str(x.motivo) && (x.origem === "regra" || x.origem === "manual") && typeof x.semRegra === "boolean" &&
     str(x.finalidade) && str(x.baseLegal) && str(x.retencao) &&
     Array.isArray(x.protecao) && x.protecao.every(str) && (x.nota === null || str(x.nota))
   );
@@ -103,7 +103,7 @@ export function paraCsv(r: Relatorio): string {
   const linhas: string[] = [CABECALHO_CSV.join(",")];
   for (const l of r.linhas) {
     const celulas = [
-      l.tabela, l.coluna, l.tipoSql, l.categoria, l.subtipo ?? "", simNao(l.sensivel), l.pessoal, simNao(l.altoRisco),
+      l.tabela, l.coluna, l.tipoSql, rotuloCategoria(l.categoria), l.subtipo ?? "", simNao(l.sensivel), l.pessoal, simNao(l.altoRisco),
       l.confianca, l.motivo, l.origem, l.finalidade, l.baseLegal, l.retencao, l.protecao.join(" | "), l.nota ?? "",
     ];
     linhas.push(celulas.map(celulaCsv).join(","));
@@ -148,7 +148,8 @@ export function paraMarkdown(r: Relatorio): string {
   out.push(`Regras: \`${r.regras}\`${r.geradoEm ? ` · gerado em ${escMd(r.geradoEm)}` : ""}`, "");
   out.push(
     `**Resumo:** ${s.tabelas} tabelas, ${s.colunas} colunas, ${s.pessoais} com dado pessoal, ${s.dependem} que dependem, ` +
-      `${s.sensiveis} sensíveis, ${s.altoRisco} financeiras (alto risco), ${s.corrigidasAMao} corrigidas à mão, ${s.achados} achados.`,
+      `${s.sensiveis} sensíveis, ${s.altoRisco} financeiras (alto risco), ${s.corrigidasAMao} corrigidas à mão, ${s.achados} achados. ` +
+      `${s.semClassificacao} colunas ficaram "não identificado pelas regras": revise, isso quer dizer que a Tarja não achou pista, não que não há dado pessoal.`,
     "",
   );
   out.push("## Colunas", "");
@@ -157,7 +158,7 @@ export function paraMarkdown(r: Relatorio): string {
     "|---|---|---|---|---|---|---|---|---|---|",
   );
   for (const l of r.linhas) {
-    const categoria = l.subtipo ? `${l.categoria} (${l.subtipo})` : l.categoria;
+    const categoria = l.subtipo ? `${rotuloCategoria(l.categoria)} (${l.subtipo})` : rotuloCategoria(l.categoria);
     out.push(
       `| ${escMd(l.tabela)} | ${escMd(l.coluna)} | ${escMd(categoria)} | ${l.sensivel ? "sim" : "não"} | ${ROTULO_PESSOAL[l.pessoal]} | ` +
         `${ROTULO_CONFIANCA[l.confianca]}${l.origem === "manual" ? " (manual)" : ""} | ${escMd(l.finalidade) || "_a preencher_"} | ` +

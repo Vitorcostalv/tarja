@@ -14,6 +14,7 @@ import {
   TABELA_PESSOA,
   TABELA_RESPONSAVEL,
   TABELA_SAUDE,
+  VOCAB_FORA_DO_CONTEXTO,
   VOCAB_PROTECAO,
 } from "./rules/pt-br";
 import { contem, familiaDoTipo, igual, singular, tokens as tokensDe, type DicionarioTexto } from "./text";
@@ -210,33 +211,74 @@ function temProtecao(nome: readonly string[], familia: FamiliaTipo): boolean {
   return familia === "binario" || nome.some((t) => VOCAB_PROTECAO.has(t));
 }
 
+/** Chave estrangeira declarada no DDL (FOREIGN KEY ... REFERENCES). É um sinal de ESTRUTURA, não de nome. */
+export interface InfoFk {
+  tabelaReferenciada: string;
+  /** A tabela referenciada está no mesmo DDL e parece um catálogo (coisas, não pessoas). */
+  paraCatalogo: boolean;
+}
+
+export const PONTUACAO_FK = 10;
+export const PONTUACAO_FK_CATALOGO = 12;
+
+const REGRA_FK: Regra = {
+  id: "nid.fk",
+  categoria: "nao_identificado",
+  padroes: [],
+  peso: PONTUACAO_FK,
+  rotulo: "chave estrangeira",
+  fontes: ["LGPD-5-I"],
+  nota: "Chave estrangeira declarada aponta para outra tabela e não identifica ninguém sozinha.",
+};
+
 export function classificarColuna(
   tabela: ParsedTable,
   coluna: ParsedColumn,
   ctx: ContextoCalculado,
   regras: readonly Regra[] = REGRAS,
+  fk: InfoFk | null = null,
 ): ClassificacaoColuna {
   const nome = tokensDe(coluna.name, DICIONARIO);
   const comentario = coluna.comment ? tokensDe(coluna.comment, DICIONARIO) : [];
   const familia = familiaDoTipo(coluna.baseType, coluna.typeArgs);
 
-  let vencedor: Candidato | null = null;
+  const candidatos: Candidato[] = [];
   regras.forEach((regra, indice) => {
     const c = avaliarRegra(regra, indice, nome, comentario, familia, ctx, coluna.rawType, tabela.name);
-    if (!c || c.pontuacao < PONTUACAO_MINIMA) return;
+    if (c && c.pontuacao >= PONTUACAO_MINIMA) candidatos.push(c);
+  });
+  if (fk) {
+    const catalogo = fk.paraCatalogo;
+    candidatos.push({
+      regra: REGRA_FK,
+      indice: regras.length,
+      pontuacao: catalogo ? PONTUACAO_FK_CATALOGO : PONTUACAO_FK,
+      sinais: [
+        {
+          tipo: "tabela",
+          texto: catalogo
+            ? `a coluna é chave estrangeira declarada para "${fk.tabelaReferenciada}", que é uma tabela de catálogo`
+            : `a coluna é chave estrangeira declarada para "${fk.tabelaReferenciada}"`,
+        },
+      ],
+      casouPeloNome: false,
+    });
+  }
+  // Regra genérica (fraca) só vale quando nenhuma regra específica casou.
+  const especificos = candidatos.filter((c) => !c.regra.fraca);
+  const validos = especificos.length > 0 ? especificos : candidatos;
+  let vencedor: Candidato | null = null;
+  for (const c of validos) {
     if (!vencedor) {
       vencedor = c;
-      return;
+      continue;
     }
     const a = c.regra.categoria;
     const b = vencedor.regra.categoria;
-    if (
-      c.pontuacao > vencedor.pontuacao ||
-      (c.pontuacao === vencedor.pontuacao && precedencia(a) < precedencia(b))
-    ) {
+    if (c.pontuacao > vencedor.pontuacao || (c.pontuacao === vencedor.pontuacao && precedencia(a) < precedencia(b))) {
       vencedor = c;
     }
-  });
+  }
 
   const base = {
     tabela: tabela.name,
@@ -281,4 +323,47 @@ export function classificarColuna(
     fontes: v.regra.fontes,
     nota: v.regra.nota ?? null,
   };
+}
+
+
+// ---------- contexto da tabela (segunda passada) ----------
+
+export const REGRA_CONTEXTO_ID = "out.contexto_da_tabela";
+
+/**
+ * Coluna sem nenhuma regra, numa tabela que tem identificador direto de pessoa (CPF, e-mail, nome...),
+ * provavelmente descreve essa pessoa. A lei define dado pessoal como "informação relacionada a pessoa
+ * natural identificada ou identificável" (art. 5º, I): não é o nome da coluna que faz dado pessoal,
+ * é a ligação com a pessoa. Confiança sempre BAIXA, e "depende": é uma suposição pelo contexto.
+ *
+ * Fica de fora: chave primária e estrangeira, colunas de sistema, credencial e estado (ver
+ * VOCAB_FORA_DO_CONTEXTO) e colunas booleanas.
+ */
+export function aplicarContextoDaTabela(
+  tabela: ParsedTable,
+  colunas: readonly ClassificacaoColuna[],
+  ctx: ContextoCalculado,
+  fkCols: ReadonlySet<string>,
+): ClassificacaoColuna[] {
+  const temIdentificadorDePessoa = colunas.some((c) => c.categoria === "identificador_direto" && c.pessoal === "sim");
+  if (!temIdentificadorDePessoa || ctx.tipo === "nao_pessoa") return [...colunas];
+  return colunas.map((c, i) => {
+    if (c.ruleId !== null || c.categoria !== "nao_identificado" || c.origem !== "regra") return c;
+    const col = tabela.columns[i] as ParsedColumn;
+    const toks = tokensDe(col.name, DICIONARIO);
+    const familia = familiaDoTipo(col.baseType, col.typeArgs);
+    if (col.isPrimaryKey || fkCols.has(col.name) || familia === "booleano") return c;
+    if (toks.some((t) => VOCAB_FORA_DO_CONTEXTO.has(t))) return c;
+    return {
+      ...c,
+      categoria: "outro_dado_pessoal",
+      pessoal: "depende",
+      confianca: "baixa",
+      motivo: `contexto da tabela: "${tabela.name}" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)`,
+      ruleId: REGRA_CONTEXTO_ID,
+      pontuacao: 0,
+      fontes: ["LGPD-5-I"],
+      nota: "Suposição pelo contexto: dado relacionado a pessoa identificada é dado pessoal (art. 5º, I), mesmo com nome de coluna comum. Confira e corrija se não for.",
+    };
+  });
 }

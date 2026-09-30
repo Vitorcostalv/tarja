@@ -1,6 +1,6 @@
 import { VERSAO_REGRAS } from "./rules/pt-br";
 import { BASE_LEGAL_POR_CATEGORIA, FINALIDADE_PADRAO, RETENCAO_PADRAO, TECNICAS, sugerirProtecao } from "./rules/protecao";
-import type { Achado, Analise, Confianca, Pessoal } from "./types";
+import type { Achado, Analise, Categoria, Confianca, Pessoal } from "./types";
 
 /**
  * Relatório de mapeamento: rascunho do inventário das operações de tratamento (LGPD, art. 37)
@@ -15,6 +15,37 @@ export const AVISO =
   "A classificação vem de regras sobre o nome, o tipo e o comentário das colunas (não é IA): dá para auditar cada decisão, mas ela erra. " +
   "A base legal é só hipótese. Finalidade e retenção dependem do negócio e são do controlador.";
 
+/** Nomes de categoria para tela e relatório. "Não identificado" sempre diz que é das regras. */
+export const ROTULO_CATEGORIA: Readonly<Record<Categoria, string>> = {
+  identificador_direto: "Identificador direto",
+  localizacao: "Localização",
+  financeiro: "Financeiro",
+  crianca_adolescente: "Criança/adolescente (indício)",
+  sensivel: "Sensível",
+  outro_dado_pessoal: "Outro dado pessoal",
+  nao_identificado: "Não identificado pelas regras",
+};
+
+export function rotuloCategoria(codigo: string): string {
+  return (ROTULO_CATEGORIA as Record<string, string>)[codigo] ?? codigo;
+}
+
+/**
+ * Colunas em que nenhuma regra casou. "Não identificado pelas regras" quer dizer "a Tarja não achou pista",
+ * não "não tem dado pessoal": o usuário precisa revisar estas.
+ */
+export function colunasSemClassificacao(analise: Analise): Array<{ tabela: string; coluna: string; tipoSql: string }> {
+  const out: Array<{ tabela: string; coluna: string; tipoSql: string }> = [];
+  for (const t of analise.tabelas) {
+    for (const c of t.colunas) {
+      if (c.origem === "regra" && c.ruleId === null && c.categoria === "nao_identificado") {
+        out.push({ tabela: c.tabela, coluna: c.coluna, tipoSql: c.tipoSql });
+      }
+    }
+  }
+  return out;
+}
+
 export interface LinhaRelatorio {
   tabela: string;
   coluna: string;
@@ -27,6 +58,8 @@ export interface LinhaRelatorio {
   confianca: Confianca;
   motivo: string;
   origem: "regra" | "manual";
+  /** Nenhuma regra casou com esta coluna: é "não identificado pelas regras" por falta de pista. */
+  semRegra: boolean;
   /** Campo para o controlador preencher. Começa vazio. */
   finalidade: string;
   /** Sempre marcada como hipótese. */
@@ -76,6 +109,7 @@ export function gerarRelatorio(analise: Analise, opcoes: OpcoesRelatorio = {}): 
         confianca: c.confianca,
         motivo: c.motivo,
         origem: c.origem,
+        semRegra: c.origem === "regra" && c.ruleId === null,
         finalidade: pre?.finalidade?.trim() ? pre.finalidade : FINALIDADE_PADRAO,
         baseLegal: c.pessoal === "nao" ? BASE_LEGAL_POR_CATEGORIA.nao_identificado.texto : BASE_LEGAL_POR_CATEGORIA[c.categoria].texto,
         retencao: pre?.retencao?.trim() ? pre.retencao : RETENCAO_PADRAO,
@@ -103,6 +137,8 @@ export interface Resumo {
   altoRisco: number;
   corrigidasAMao: number;
   achados: number;
+  /** Colunas sem nenhuma regra: revise. */
+  semClassificacao: number;
 }
 
 export function resumir(r: Relatorio): Resumo {
@@ -116,5 +152,6 @@ export function resumir(r: Relatorio): Resumo {
     altoRisco: r.linhas.filter((l) => l.altoRisco).length,
     corrigidasAMao: r.linhas.filter((l) => l.origem === "manual").length,
     achados: r.achados.length,
+    semClassificacao: r.linhas.filter((l) => l.semRegra && l.categoria === "nao_identificado").length,
   };
 }

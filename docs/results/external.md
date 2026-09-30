@@ -1,7 +1,7 @@
 # Resultado do corpus: external
 
 Colunas: 153 (137 avaliadas, 16 com "depende" fora das métricas).
-Acerto exato de categoria: 96%.
+Acerto exato de categoria: 92%.
 Subtipo de dado sensível certo: 0 de 0.
 
 | Categoria | Suporte | Precisão | Recall | F1 |
@@ -11,34 +11,39 @@ Subtipo de dado sensível certo: 0 de 0.
 | Identificador direto | 21 | 95% | 90% | 93% |
 | Localização | 5 | 100% | 100% | 100% |
 | Financeiro | 1 | 100% | 100% | 100% |
-| Outro dado pessoal | 7 | 100% | 57% | 73% |
-| Não identificado | 103 | 96% | 100% | 98% |
-| **Dado pessoal vs não pessoal** (binária) | 34 | 100% | 88% | 94% |
+| Outro dado pessoal | 7 | 38% | 71% | 50% |
+| Não identificado | 103 | 98% | 93% | 96% |
+| **Dado pessoal vs não pessoal** (binária) | 34 | 82% | 94% | 88% |
 
-Contagens da métrica binária: VP 30, FP 0, FN 4. "depende" da Tarja conta como positivo.
+Contagens da métrica binária: VP 32, FP 7, FN 2. "depende" da Tarja conta como positivo.
 
 ## Erros, com os falsos negativos de dado pessoal primeiro
 
-### Falsos negativos de dado pessoal (passou sem marcar) (4)
+### Falsos negativos de dado pessoal (passou sem marcar) (2)
 
 - `employees` · `employees.emp_no`: gabarito **identificador_direto**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `employees` · `titles.title`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_users.user_nicename`: gabarito **identificador_direto**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_users.user_url`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 
-### Falsos positivos (marcou dado pessoal onde o gabarito diz que não é)
+### Falsos positivos (marcou dado pessoal onde o gabarito diz que não é) (7)
 
-Nenhum.
+- `wordpress` · `wp_comments.comment_date`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_comments.comment_date_gmt`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_comments.comment_karma`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_comments.comment_parent`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_signups.domain`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_signups" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_signups.path`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_signups" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_signups.title`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_signups" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
 
-### Pessoal nos dois lados, categoria errada (1)
+### Pessoal nos dois lados, categoria errada (2)
 
 - `wordpress` · `wp_comments.comment_author_url`: gabarito **outro_dado_pessoal**, a Tarja disse **identificador_direto** (media). o nome da coluna contém "titular ou favorecido"; o tipo varchar(200) combina
+- `wordpress` · `wp_users.user_nicename`: gabarito **identificador_direto**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_users" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
 
 ## Achados estruturais
 
 | Achado | VP | FP | FN | Precisão | Recall |
 |---|---:|---:|---:|---:|---:|
-| SEM_CICLO_DE_VIDA | 3 | 6 | 0 | 33% | 100% |
+| SEM_CICLO_DE_VIDA | 3 | 3 | 0 | 50% | 100% |
 | TEXTO_LIVRE | 1 | 1 | 0 | 50% | 100% |
 
 ### Achados que faltaram
@@ -49,11 +54,8 @@ Nenhum.
 
 - `employees` · SEM_CICLO_DE_VIDA · `employees`
 - `employees` · SEM_CICLO_DE_VIDA · `salaries`
-- `sakila` · SEM_CICLO_DE_VIDA · `customer`
-- `wordpress` · SEM_CICLO_DE_VIDA · `wp_users`
 - `wordpress` · SEM_CICLO_DE_VIDA · `wp_comments`
 - `wordpress` · TEXTO_LIVRE · `wp_comments.comment_author`
-- `wordpress` · SEM_CICLO_DE_VIDA · `wp_signups`
 
 ### Colunas com "depende" no gabarito (fora das métricas) (16)
 
@@ -66,10 +68,10 @@ Nenhum.
 - `employees` · `titles.from_date`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `employees` · `titles.to_date`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `sakila` · `staff.password`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_comments.comment_agent`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_comments.comment_content`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_signups.activation_key`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_signups.meta`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `wordpress` · `wp_comments.comment_agent`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_comments.comment_content`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_comments" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_signups.activation_key`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_signups" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
+- `wordpress` · `wp_signups.meta`: gabarito **outro_dado_pessoal**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_signups" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
 - `wordpress` · `wp_usermeta.meta_value`: gabarito **outro_dado_pessoal**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
-- `wordpress` · `wp_users.user_activation_key`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
+- `wordpress` · `wp_users.user_activation_key`: gabarito **nao_identificado**, a Tarja disse **outro_dado_pessoal** (baixa). contexto da tabela: "wp_users" tem identificador direto de pessoa, então esta coluna provavelmente descreve essa pessoa (nenhuma regra casou com o nome)
 - `wordpress` · `wp_users.user_pass`: gabarito **nao_identificado**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal

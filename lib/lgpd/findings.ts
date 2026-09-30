@@ -2,6 +2,7 @@ import type { ParsedTable } from "../sql/types";
 import { DICIONARIO } from "./classify";
 import {
   TABELA_CRIANCA,
+  TABELA_ESCOLA_OU_RESPONSAVEL,
   TABELA_LOG,
   VOCAB_CRIACAO,
   VOCAB_EXCLUSAO,
@@ -39,7 +40,23 @@ function compara(a: Achado, b: Achado): number {
   );
 }
 
-export function gerarAchados(tabela: ParsedTable, classificacoes: readonly ClassificacaoColuna[]): Achado[] {
+export interface OpcoesAchados {
+  /** Contexto da tabela (catálogo não gera SEM_CICLO_DE_VIDA). */
+  contexto?: "pessoa" | "nao_pessoa" | "neutro";
+  /** Colunas que são chave estrangeira declarada (para reconhecer tabela de ligação). */
+  fkCols?: ReadonlySet<string>;
+}
+
+/** Tabela de ligação: a chave primária é composta só de chaves estrangeiras. */
+function ehTabelaDeLigacao(tabela: ParsedTable, fkCols: ReadonlySet<string>): boolean {
+  return tabela.primaryKey.length >= 2 && tabela.primaryKey.every((c) => fkCols.has(c));
+}
+
+export function gerarAchados(
+  tabela: ParsedTable,
+  classificacoes: readonly ClassificacaoColuna[],
+  opcoes: OpcoesAchados = {},
+): Achado[] {
   const achados: Achado[] = [];
   const pessoais = classificacoes.filter((c) => c.pessoal === "sim");
   const temSensivel = classificacoes.some((c) => c.sensivel);
@@ -48,7 +65,11 @@ export function gerarAchados(tabela: ParsedTable, classificacoes: readonly Class
   const tokensColunas = tabela.columns.map((c) => ({ coluna: c, tokens: tokensDe(c.name, DICIONARIO) }));
 
   // 1. Sem ciclo de vida: dificulta saber quando eliminar (arts. 15 e 16).
-  if (pessoais.length > 0) {
+  // Só para tabela com dado pessoal de confiança média ou alta. Catálogo e tabela de ligação ficam de fora.
+  const pessoaisFirmes = pessoais.filter((c) => c.confianca !== "baixa");
+  const ehCatalogo = opcoes.contexto === "nao_pessoa";
+  const ehLigacao = ehTabelaDeLigacao(tabela, opcoes.fkCols ?? new Set());
+  if (pessoaisFirmes.length > 0 && !ehCatalogo && !ehLigacao) {
     const temData = tokensColunas.some(
       ({ tokens }) => tokens.some((t) => VOCAB_CRIACAO.has(t)) || tokens.some((t) => VOCAB_EXCLUSAO.has(t)),
     );
@@ -118,7 +139,10 @@ export function gerarAchados(tabela: ParsedTable, classificacoes: readonly Class
   // 5. Indício de dado de criança ou adolescente.
   const colunaDeMenor = classificacoes.some((c) => c.categoria === "crianca_adolescente");
   const nomeDeMenor = nomesTabela.some((t) => TABELA_CRIANCA.has(t));
-  if (colunaDeMenor || nomeDeMenor) {
+  // Data de nascimento numa tabela de escola ou de responsável soma indício de criança ou adolescente.
+  const temNascimento = classificacoes.some((c) => c.ruleId === "out.nascimento");
+  const nascimentoEmContextoEscolar = temNascimento && nomesTabela.some((t) => TABELA_ESCOLA_OU_RESPONSAVEL.has(t));
+  if (colunaDeMenor || nomeDeMenor || nascimentoEmContextoEscolar) {
     achados.push({
       id: "INDICIO_MENOR",
       gravidade: "alta",

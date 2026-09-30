@@ -57,6 +57,8 @@ export interface Regra {
   pessoal?: Pessoal;
   /** Bônus (ou penalidade, se negativo) por contexto da tabela. */
   contexto?: Partial<Record<ContextoTabela, number>>;
+  /** Regra genérica: só vale se nenhuma regra mais específica casar com a coluna. */
+  fraca?: boolean;
   /** Só vale se o nome da coluna for exatamente o padrão (ex.: "conta", mas não "tipo_conta"). */
   exata?: boolean;
   /** Entra na decisão "esta tabela é de pessoas?". */
