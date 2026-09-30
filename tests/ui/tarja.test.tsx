@@ -125,6 +125,28 @@ describe("interface: entrada, limite e erro", () => {
   });
 });
 
+describe("interface: schema grande", () => {
+  it("desenha 50 tabelas de cada vez e oferece mostrar mais, sem perder nada no relatório", async () => {
+    render(<Tarja />);
+    const ddl = Array.from({ length: 120 }, (_, i) => `CREATE TABLE tabela_${i} (id INT, cpf CHAR(11), criado_em DATETIME);`).join("\n");
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: ddl } });
+    fireEvent.click(screen.getByRole("button", { name: "Analisar" }));
+    await waitFor(() => expect(document.querySelectorAll("article.folha").length).toBe(50));
+    expect(screen.getByText(/Mostrando 50 de 120 tabelas/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Mostrar mais 50/ }));
+    await waitFor(() => expect(document.querySelectorAll("article.folha").length).toBe(100));
+    // O relatório (tabela) tem as 120 × 3 colunas, independentemente do que o documento desenhou.
+    expect(document.querySelectorAll(".relatorio tbody tr").length).toBe(360);
+  });
+
+  it("o leitor de tela recebe um aviso curto, não o resultado inteiro", async () => {
+    await abrirExemplo();
+    const status = screen.getByRole("status");
+    expect(status.textContent).toMatch(/^Análise pronta: 6 tabelas, 40 colunas/);
+    expect(status.textContent!.length).toBeLessThan(200);
+  });
+});
+
 describe("interface: exportação e privacidade", () => {
   it("Markdown, CSV e JSON viram arquivo local (blob:), com o aviso dentro", async () => {
     await abrirExemplo();
@@ -148,6 +170,14 @@ describe("interface: exportação e privacidade", () => {
     fireEvent.click(screen.getByRole("button", { name: "JSON" }));
     clique.mockRestore();
     expect(fetchEspiao).not.toHaveBeenCalled();
+  });
+
+  it("o atalho #exemplo abre com o schema de exemplo (um atalho fixo, nunca schema de ninguém)", async () => {
+    window.location.hash = "#exemplo";
+    render(<Tarja />);
+    await waitFor(() => expect(screen.getByRole("heading", { name: "O documento" })).toBeTruthy());
+    expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/Clínica Exemplo/);
+    window.location.hash = "";
   });
 
   it("o schema não vai para a URL nem para o storage", async () => {

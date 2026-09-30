@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Correcoes } from "../lib/lgpd/analyze";
 import { paraCsv, paraJson, paraMarkdown } from "../lib/lgpd/export";
 import { fraseDeDesempenho } from "../lib/lgpd/medicao";
@@ -17,6 +17,8 @@ import { Coluna, type Preenchimento } from "./Coluna";
 import { useAnalise } from "./useAnalise";
 
 const VAZIO: Preenchimento = { finalidade: "", retencao: "" };
+/** Quantas tabelas o documento desenha de cada vez: com milhares de colunas, desenhar tudo travaria a aba. O relatório exportado tem tudo. */
+const POR_PAGINA = 50;
 const chave = (t: string, c: string) => `${t}.${c}`;
 const ROTULO_GRAVIDADE = { alta: "Alta", media: "Média", baixa: "Baixa", informativo: "Informativo" } as const;
 
@@ -32,6 +34,7 @@ export function Tarja() {
   const [preench, setPreench] = useState<Record<string, Preenchimento>>({});
   const [abertas, setAbertas] = useState<ReadonlySet<string>>(new Set());
   const [mostrarRelatorio, setMostrarRelatorio] = useState(false);
+  const [tabelasVisiveis, setTabelasVisiveis] = useState(POR_PAGINA);
   const resultadoRef = useRef<HTMLDivElement>(null);
 
   const { pronto, parse, analise } = useAnalise(analisado, correcoes);
@@ -52,14 +55,21 @@ export function Tarja() {
     setErroTamanho(false);
     setCorrecoes({});
     setAbertas(new Set());
+    setTabelasVisiveis(POR_PAGINA);
     setAnalisado(ddl);
   }, []);
 
-  const usarExemplo = () => {
+  const usarExemplo = useCallback(() => {
     setTexto(SCHEMA_EXEMPLO);
     analisar(SCHEMA_EXEMPLO);
     setTimeout(() => resultadoRef.current?.focus(), 50);
-  };
+  }, [analisar]);
+
+  // Link de demonstração: "#exemplo" abre já com o schema de exemplo. O hash nunca carrega schema de ninguém:
+  // é só um atalho para o exemplo fixo (serve para print, README e divulgação).
+  useEffect(() => {
+    if (window.location.hash === "#exemplo") usarExemplo();
+  }, [usarExemplo]);
   const limpar = () => {
     setTexto("");
     setAnalisado(null);
@@ -89,6 +99,17 @@ export function Tarja() {
     if (formato === "csv") baixarArquivo("tarja-mapeamento.csv", paraCsv(relatorio), "text/csv", true);
     if (formato === "json") baixarArquivo("tarja-mapeamento.json", paraJson(relatorio), "application/json");
   };
+
+  // O relatório tem uma linha por coluna, na mesma ordem da análise: o índice é a soma das colunas das tabelas anteriores.
+  const inicioDaTabela = useMemo(() => {
+    const inicios: number[] = [];
+    let soma = 0;
+    for (const t of analise?.tabelas ?? []) {
+      inicios.push(soma);
+      soma += t.colunas.length;
+    }
+    return inicios;
+  }, [analise]);
 
   const achadosDa = (tabela: string): Achado[] => (analise ? analise.achados.filter((a) => a.tabela === tabela) : []);
 
@@ -155,7 +176,16 @@ export function Tarja() {
           ) : null}
         </section>
 
-        <div ref={resultadoRef} tabIndex={-1} aria-live="polite" aria-busy={!pronto} className="resultado">
+        <p className="so-leitor" role="status" aria-live="polite">
+          {analisado === null
+            ? ""
+            : !pronto
+              ? "Analisando o schema."
+              : resumo
+                ? `Análise pronta: ${resumo.tabelas} tabelas, ${resumo.colunas} colunas, ${resumo.pessoais} com dado pessoal, ${resumo.sensiveis} sensíveis, ${resumo.semClassificacao} sem pista para revisar.`
+                : "Nada para mostrar."}
+        </p>
+        <div ref={resultadoRef} tabIndex={-1} aria-busy={!pronto} className="resultado">
           {analisado !== null && !pronto ? <p className="mensagem">Analisando…</p> : null}
 
           {parse && analise && relatorio && resumo ? (
@@ -266,8 +296,8 @@ export function Tarja() {
                     <p className="nota nao-imprimir">
                       As colunas com dado pessoal estão cobertas. Use Tab e Enter (ou clique) numa tarja para ver categoria, confiança, motivo e sugestão. Na impressão, tudo aparece.
                     </p>
-                    {analise.tabelas.map((t, ti) => (
-                      <article className="folha" key={t.nome}>
+                    {analise.tabelas.slice(0, tabelasVisiveis).map((t, ti) => (
+                      <article className="folha" key={`${t.nome}-${ti}`}>
                         <header>
                           <h3>{t.nome}</h3>
                           <span className="rotulo">
@@ -278,7 +308,7 @@ export function Tarja() {
                         <ol>
                           {t.colunas.map((c, ci) => {
                             const k = chave(c.tabela, c.coluna);
-                            const linha = relatorio.linhas[relatorio.linhas.findIndex((l) => l.tabela === c.tabela && l.coluna === c.coluna)];
+                            const linha = relatorio.linhas[inicioDaTabela[ti]! + ci];
                             return (
                               <Coluna
                                 key={`${k}-${ci}`}
@@ -312,6 +342,15 @@ export function Tarja() {
                       </article>
                     ))}
                   </section>
+
+                  {analise.tabelas.length > tabelasVisiveis ? (
+                    <p className="mensagem nao-imprimir">
+                      Mostrando {tabelasVisiveis} de {analise.tabelas.length} tabelas, para a página não travar. O relatório e as exportações têm todas.{" "}
+                      <button type="button" className="botao botao-mini" onClick={() => setTabelasVisiveis((n) => n + POR_PAGINA)}>
+                        Mostrar mais {Math.min(POR_PAGINA, analise.tabelas.length - tabelasVisiveis)}
+                      </button>
+                    </p>
+                  ) : null}
 
                   {analise.achados.length > 0 ? (
                     <section className="achados" aria-labelledby="titulo-achados">

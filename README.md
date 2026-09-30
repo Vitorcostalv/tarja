@@ -2,9 +2,9 @@
 
 **Raio-X de LGPD para schemas SQL.** Você cola o `CREATE TABLE` do MySQL, a Tarja diz quais colunas guardam dado pessoal ou sensível, sugere como proteger e monta um rascunho do inventário de dados.
 
-> **Status: em construção.** O motor (parser, classificador, achados, relatório, testes e corpus) está pronto. A interface, o deploy e o link público vêm na próxima etapa.
->
-> Link do deploy: _em breve_ · Print: _em breve_
+> Link do deploy: _em breve_ · Demonstração sem colar nada: abra com `#exemplo` no fim do endereço.
+
+![A Tarja com o schema de exemplo: nomes de coluna cobertos por tarja preta, uma coluna sensível com borda laranja dupla, e o detalhe aberto](docs/assets/tarja-exemplo.png)
 
 ## O aviso que importa
 

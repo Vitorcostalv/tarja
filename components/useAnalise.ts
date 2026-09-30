@@ -20,6 +20,8 @@ export function useAnalise(ddl: string | null, correcoes: Correcoes): EstadoAnal
   const [estado, setEstado] = useState<EstadoAnalise>({ pronto: true, parse: null, analise: null });
   const worker = useRef<Worker | null>(null);
   const pedido = useRef(0);
+  // Sobe quando o worker dá erro: força o efeito a refazer o pedido na thread principal.
+  const [falhas, setFalhas] = useState(0);
 
   useEffect(() => {
     try {
@@ -30,7 +32,9 @@ export function useAnalise(ddl: string | null, correcoes: Correcoes): EstadoAnal
         setEstado({ pronto: true, parse: e.data.parse, analise: e.data.analise });
       };
       w.onerror = () => {
+        worker.current?.terminate();
         worker.current = null;
+        setFalhas((n) => n + 1);
       };
     } catch {
       worker.current = null;
@@ -61,7 +65,7 @@ export function useAnalise(ddl: string | null, correcoes: Correcoes): EstadoAnal
       setEstado({ pronto: true, parse: r.parse, analise: r.analise });
     }, 0);
     return () => clearTimeout(t);
-  }, [ddl, correcoes]);
+  }, [ddl, correcoes, falhas]);
 
   return estado;
 }
