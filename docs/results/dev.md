@@ -1,21 +1,21 @@
 # Resultado do corpus: dev
 
 Colunas: 397 (373 avaliadas, 24 com "depende" fora das métricas).
-Acerto exato de categoria: 98%.
+Acerto exato de categoria: 99%.
 Subtipo de dado sensível certo: 26 de 29.
 
 | Categoria | Suporte | Precisão | Recall | F1 |
 |---|---:|---:|---:|---:|
 | Sensível | 29 | 100% | 93% | 96% |
-| Criança/adolescente (indício) | 5 | 83% | 100% | 91% |
+| Criança/adolescente (indício) | 5 | 100% | 100% | 100% |
 | Identificador direto | 58 | 100% | 97% | 98% |
 | Localização | 28 | 100% | 100% | 100% |
 | Financeiro | 27 | 100% | 96% | 98% |
 | Outro dado pessoal | 26 | 100% | 100% | 100% |
 | Não identificado | 200 | 98% | 100% | 99% |
-| **Dado pessoal vs não pessoal** (binária) | 173 | 99% | 97% | 98% |
+| **Dado pessoal vs não pessoal** (binária) | 173 | 100% | 97% | 99% |
 
-Contagens da métrica binária: VP 168, FP 1, FN 5. "depende" da Tarja conta como positivo.
+Contagens da métrica binária: VP 168, FP 0, FN 5. "depende" da Tarja conta como positivo.
 
 ## Erros, com os falsos negativos de dado pessoal primeiro
 
@@ -27,9 +27,9 @@ Contagens da métrica binária: VP 168, FP 1, FN 5. "depende" da Tarja conta com
 - `fintech` · `documentos_kyc.arquivo_verso_url`: gabarito **identificador_direto**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 - `rh` · `atestados_medicos.arquivo_url`: gabarito **sensivel:saude**, a Tarja disse **nao_identificado** (baixa). nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal
 
-### Falsos positivos (marcou dado pessoal onde o gabarito diz que não é) (1)
+### Falsos positivos (marcou dado pessoal onde o gabarito diz que não é)
 
-- `escola` · `responsaveis.responsavel_financeiro`: gabarito **nao_identificado**, a Tarja disse **crianca_adolescente** (alta). o nome da coluna contém "responsável legal"
+Nenhum.
 
 ### Pessoal nos dois lados, categoria errada
 
@@ -39,7 +39,7 @@ Nenhum.
 
 | Achado | VP | FP | FN | Precisão | Recall |
 |---|---:|---:|---:|---:|---:|
-| INDICIO_MENOR | 3 | 1 | 0 | 75% | 100% |
+| INDICIO_MENOR | 3 | 0 | 0 | 100% | 100% |
 | PESSOAL_EM_LOG | 5 | 0 | 0 | 100% | 100% |
 | SEM_CICLO_DE_VIDA | 7 | 0 | 0 | 100% | 100% |
 | SENSIVEL_SEM_PROTECAO | 27 | 0 | 3 | 100% | 90% |
@@ -53,7 +53,7 @@ Nenhum.
 
 ### Achados a mais
 
-- `escola` · INDICIO_MENOR · `responsaveis`
+Nenhum.
 
 ### Colunas com "depende" no gabarito (fora das métricas) (24)
 

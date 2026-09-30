@@ -1,4 +1,5 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { loadCorpus } from "../corpus/load";
 import { avaliarCorpus } from "../lib/lgpd/corpus-eval";
 import { relatorioMarkdown } from "../lib/lgpd/metrics";
@@ -22,3 +23,34 @@ for (const c of metricas.porCategoria) {
   console.log(`  ${c.categoria.padEnd(22)} suporte ${String(c.suporte).padStart(3)}  P ${pct(c.precisao).padStart(4)}  R ${pct(c.recall).padStart(4)}`);
 }
 console.log(`relatório completo em ${arquivo}`);
+
+// Corpus de validação: cada execução fica registrada (quantas vezes foi usado, em qual commit).
+if (nome === "validation") {
+  const registro = "docs/validation-runs.md";
+  const cabecalho =
+    "# Execuções do corpus de validação
+
+Este corpus é congelado: não se ajusta regra olhando para ele. Cada execução é registrada aqui.
+
+| # | Data | Commit | Recall binário | Precisão binária | FN de dado pessoal |
+|---:|---|---|---:|---:|---:|
+";
+  if (!existsSync(registro)) writeFileSync(registro, cabecalho, "utf8");
+  const linhas = readFileSync(registro, "utf8").split("
+").filter((l) => /^\| \d+ \|/.test(l));
+  let commit = "desconhecido";
+  try {
+    commit = execSync("git rev-parse --short HEAD", { encoding: "utf8" }).trim();
+    if (execSync("git status --porcelain lib corpus", { encoding: "utf8" }).trim() !== "") commit += " (+alterações não commitadas)";
+  } catch {
+    /* fora de um repositório git */
+  }
+  const data = new Date().toISOString().slice(0, 10);
+  appendFileSync(
+    registro,
+    `| ${linhas.length + 1} | ${data} | ${commit} | ${pct(metricas.binaria.recall)} | ${pct(metricas.binaria.precisao)} | ${metricas.binaria.fn} |
+`,
+    "utf8",
+  );
+  console.log(`execução ${linhas.length + 1} da validação registrada em ${registro}`);
+}

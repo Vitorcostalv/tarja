@@ -78,7 +78,7 @@ export const TABELA_NAO_PESSOA: ReadonlySet<string> = new Set([
   "curso", "disciplina", "feriado", "banco", "cidade", "estado", "pais", "country", "marca", "brand", "parceiro",
   "empresa", "company", "convenio", "sistema", "cfg", "config", "configuracao", "parametro", "setting", "moeda",
   "currency", "idioma", "locale", "tag", "vaga", "listing", "anuncio", "servico", "service", "plano", "regiao", "ref",
-  "lookup", "dominio", "estoque", "fornecedor", "supplier", "cupom", "coupon", "permissao", "role", "menu",
+  "lookup", "dominio", "estoque", "city", "language", "department", "dept", "film", "genre", "fornecedor", "supplier", "cupom", "coupon", "permissao", "role", "menu",
 ]);
 
 export const TABELA_ENDERECO: ReadonlySet<string> = new Set(["endereco", "address", "logradouro", "localizacao"]);
@@ -251,7 +251,7 @@ export const REGRAS: readonly Regra[] = [
   {
     id: "idd.titular",
     categoria: "identificador_direto",
-    padroes: [P("titular"), P("holder"), P("card", "holder"), P("favorecido"), P("beneficiario")],
+    padroes: [P("titular"), P("holder"), P("card", "holder"), P("favorecido"), P("beneficiario"), P("author"), P("autor")],
     peso: 5,
     tipos: ["texto"],
     rotulo: "titular ou favorecido",
@@ -699,7 +699,7 @@ export const REGRAS: readonly Regra[] = [
   {
     id: "out.vida_funcional",
     categoria: "outro_dado_pessoal",
-    padroes: [P("admissao"), P("demissao"), P("hired"), P("formacao"), P("degree"), P("escolaridade")],
+    padroes: [P("admissao"), P("demissao"), P("hired"), P("hire"), P("formacao"), P("degree"), P("escolaridade")],
     peso: 5,
     rotulo: "vida funcional ou formação",
     fontes: LEI_PESSOAL,
@@ -732,7 +732,7 @@ export const REGRAS: readonly Regra[] = [
   {
     id: "out.imagem",
     categoria: "outro_dado_pessoal",
-    padroes: [P("foto"), P("photo"), P("avatar"), P("selfie")],
+    padroes: [P("foto"), P("photo"), P("picture"), P("avatar"), P("selfie")],
     peso: 6,
     rotulo: "foto",
     fontes: LEI_PESSOAL,
