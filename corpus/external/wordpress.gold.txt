@@ -1,0 +1,46 @@
+# Gabarito: wordpress (EXTERNO, terceiros). Escrito antes de rodar o classificador neste arquivo.
+
+wp_users.ID nid
+wp_users.user_login idd
+wp_users.user_pass nid ?
+wp_users.user_nicename idd
+wp_users.user_email idd
+wp_users.user_url out
+wp_users.user_registered nid
+wp_users.user_activation_key nid ?
+wp_users.user_status nid
+wp_users.display_name idd
+
+wp_usermeta.umeta_id nid
+wp_usermeta.user_id nid
+wp_usermeta.meta_key nid
+wp_usermeta.meta_value out ?
+
+wp_comments.comment_ID nid
+wp_comments.comment_post_ID nid
+wp_comments.comment_author idd
+wp_comments.comment_author_email idd
+wp_comments.comment_author_url out
+wp_comments.comment_author_IP loc
+wp_comments.comment_date nid
+wp_comments.comment_date_gmt nid
+wp_comments.comment_content nid ?
+wp_comments.comment_karma nid
+wp_comments.comment_approved nid
+wp_comments.comment_agent out ?
+wp_comments.comment_type nid
+wp_comments.comment_parent nid
+wp_comments.user_id nid
+@achado TEXTO_LIVRE wp_comments.comment_content
+
+wp_signups.signup_id nid
+wp_signups.domain nid
+wp_signups.path nid
+wp_signups.title nid
+wp_signups.user_login idd
+wp_signups.user_email idd
+wp_signups.registered nid
+wp_signups.activated nid
+wp_signups.active nid
+wp_signups.activation_key nid ?
+wp_signups.meta out ?

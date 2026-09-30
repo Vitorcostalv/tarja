@@ -1,0 +1,111 @@
+# Gabarito: sakila (EXTERNO, terceiros). Escrito antes de rodar o classificador neste arquivo.
+# Critérios: corpus/GABARITO.md. Tabela "address" é compartilhada por clientes, funcionários e lojas;
+# tratei como endereço pessoal (quem monta o inventário listaria).
+
+actor.actor_id nid
+actor.first_name idd
+actor.last_name idd
+actor.last_update nid
+@achado SEM_CICLO_DE_VIDA actor
+
+address.address_id nid
+address.address loc
+address.address2 loc
+address.district loc
+address.city_id nid
+address.postal_code loc
+address.phone idd
+address.last_update nid
+@achado SEM_CICLO_DE_VIDA address
+
+category.category_id nid
+category.name nid
+category.last_update nid
+
+city.city_id nid
+city.city nid
+city.country_id nid
+city.last_update nid
+
+country.country_id nid
+country.country nid
+country.last_update nid
+
+customer.customer_id nid
+customer.store_id nid
+customer.first_name idd
+customer.last_name idd
+customer.email idd
+customer.address_id nid
+customer.active nid
+customer.create_date nid
+customer.last_update nid
+
+film.film_id nid
+film.title nid
+film.description nid
+film.release_year nid
+film.language_id nid
+film.original_language_id nid
+film.rental_duration nid
+film.rental_rate nid
+film.length nid
+film.replacement_cost nid
+film.rating nid
+film.special_features nid
+film.last_update nid
+
+film_actor.actor_id nid
+film_actor.film_id nid
+film_actor.last_update nid
+
+film_category.film_id nid
+film_category.category_id nid
+film_category.last_update nid
+
+film_text.film_id nid
+film_text.title nid
+film_text.description nid
+
+inventory.inventory_id nid
+inventory.film_id nid
+inventory.store_id nid
+inventory.last_update nid
+
+language.language_id nid
+language.name nid
+language.last_update nid
+
+payment.payment_id nid
+payment.customer_id nid
+payment.staff_id nid
+payment.rental_id nid
+payment.amount nid
+payment.payment_date nid
+payment.last_update nid
+
+rental.rental_id nid
+rental.rental_date nid
+rental.inventory_id nid
+rental.customer_id nid
+rental.return_date nid
+rental.staff_id nid
+rental.last_update nid
+
+staff.staff_id nid
+staff.first_name idd
+staff.last_name idd
+staff.address_id nid
+staff.picture out
+staff.email idd
+staff.store_id nid
+staff.active nid
+staff.username idd
+staff.password nid ?
+staff.last_update nid
+@achado SEM_CICLO_DE_VIDA staff
+
+store.store_id nid
+store.manager_staff_id nid
+store.address_id nid
+store.last_update nid

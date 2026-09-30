@@ -1,0 +1,284 @@
+import type { ParsedColumn, ParsedTable } from "../sql/types";
+import {
+  APELIDOS,
+  DESCARTAR,
+  END_NAO_ENDERECO,
+  NAO_PLURAL,
+  REGRAS,
+  TABELA_CARTAO,
+  TABELA_CONTA,
+  TABELA_ENDERECO,
+  TABELA_FINANCEIRO,
+  TABELA_LOG,
+  TABELA_NAO_PESSOA,
+  TABELA_PESSOA,
+  TABELA_RESPONSAVEL,
+  TABELA_SAUDE,
+  VOCAB_PROTECAO,
+} from "./rules/pt-br";
+import { contem, familiaDoTipo, igual, singular, tokens as tokensDe, type DicionarioTexto } from "./text";
+import {
+  CATEGORIAS,
+  type Categoria,
+  type ClassificacaoColuna,
+  type Confianca,
+  type ContextoTabela,
+  type FamiliaTipo,
+  type Pessoal,
+  type Regra,
+  type SinalMotivo,
+} from "./types";
+
+export const DICIONARIO: DicionarioTexto = {
+  apelidos: APELIDOS,
+  descartar: DESCARTAR,
+  endNaoEndereco: END_NAO_ENDERECO,
+};
+
+export const PONTUACAO_MINIMA = 5;
+export const LIMIAR_MEDIA = 7;
+export const LIMIAR_ALTA = 9;
+
+export interface ContextoCalculado {
+  /** Conjunto de rótulos que valem para a tabela (inclui um de pessoa/nao_pessoa/neutro). */
+  rotulos: ReadonlySet<ContextoTabela>;
+  tipo: "pessoa" | "nao_pessoa" | "neutro";
+  /** Por que a tabela foi lida assim. Vai para o motivo. */
+  porque: string;
+}
+
+interface Candidato {
+  regra: Regra;
+  indice: number;
+  pontuacao: number;
+  sinais: SinalMotivo[];
+  casouPeloNome: boolean;
+}
+
+// ---------- contexto da tabela ----------
+
+function tokensDaTabela(nome: string): string[] {
+  return tokensDe(nome, DICIONARIO).map((t) => singular(t, NAO_PLURAL));
+}
+
+function temAlgum(tokens: readonly string[], conjunto: ReadonlySet<string>): boolean {
+  return tokens.some((t) => conjunto.has(t));
+}
+
+/** Pontua `coluna` só pelo nome (sem contexto). Usado para inferir se a tabela é de pessoas. */
+function ehEvidenciaDePessoa(coluna: ParsedColumn): boolean {
+  const toks = tokensDe(coluna.name, DICIONARIO);
+  for (const r of REGRAS) {
+    if (!r.evidenciaPessoa || r.peso < 6) continue;
+    for (const p of r.padroes) {
+      if (contem(toks, p)) return true;
+    }
+  }
+  return false;
+}
+
+export function contextoDaTabela(tabela: ParsedTable): ContextoCalculado {
+  const toks = tokensDaTabela(tabela.name);
+  const comentario = tabela.comment ? tokensDe(tabela.comment, DICIONARIO) : [];
+  const rotulos = new Set<ContextoTabela>();
+
+  if (temAlgum(toks, TABELA_ENDERECO)) rotulos.add("endereco");
+  if (temAlgum(toks, TABELA_LOG)) rotulos.add("log");
+  if (temAlgum(toks, TABELA_CARTAO)) rotulos.add("cartao");
+  if (temAlgum(toks, TABELA_CONTA)) rotulos.add("conta");
+  if (temAlgum(toks, TABELA_FINANCEIRO)) rotulos.add("financeiro");
+  if (temAlgum(toks, TABELA_SAUDE)) rotulos.add("saude");
+  if (temAlgum(toks, TABELA_RESPONSAVEL)) rotulos.add("responsavel");
+
+  const dePessoa = temAlgum(toks, TABELA_PESSOA);
+  const deCoisa = temAlgum(toks, TABELA_NAO_PESSOA) || contem(comentario, ["pessoa", "juridica"]);
+
+  let tipo: ContextoCalculado["tipo"];
+  let porque: string;
+  if (dePessoa && !deCoisa) {
+    tipo = "pessoa";
+    porque = `o nome da tabela "${tabela.name}" indica pessoas`;
+  } else if (deCoisa && !dePessoa) {
+    tipo = "nao_pessoa";
+    porque = `o nome (ou o COMMENT) da tabela "${tabela.name}" indica coisas ou empresas, não pessoas`;
+  } else if (dePessoa && deCoisa) {
+    tipo = "neutro";
+    porque = `o nome da tabela "${tabela.name}" mistura pessoas e coisas`;
+  } else {
+    const evidencias = tabela.columns.filter(ehEvidenciaDePessoa).length;
+    if (evidencias >= 2) {
+      tipo = "pessoa";
+      porque = `a tabela "${tabela.name}" tem ${evidencias} colunas que só fazem sentido para pessoas (CPF, e-mail, telefone...)`;
+    } else {
+      tipo = "neutro";
+      porque = `o nome da tabela "${tabela.name}" não diz se guarda pessoas`;
+    }
+  }
+  rotulos.add(tipo);
+  return { rotulos, tipo, porque };
+}
+
+// ---------- classificação de coluna ----------
+
+function compativel(familia: FamiliaTipo, aceitas: readonly FamiliaTipo[]): boolean {
+  if (aceitas.includes(familia)) return true;
+  return familia === "texto_longo" && aceitas.includes("texto");
+}
+
+function bonusDeContexto(regra: Regra, ctx: ContextoCalculado): number {
+  if (!regra.contexto) return 0;
+  let total = 0;
+  for (const rotulo of ctx.rotulos) total += regra.contexto[rotulo] ?? 0;
+  return total;
+}
+
+function avaliarRegra(
+  regra: Regra,
+  indice: number,
+  nome: readonly string[],
+  comentario: readonly string[],
+  familia: FamiliaTipo,
+  ctx: ContextoCalculado,
+  tipoSql: string,
+  nomeTabela: string,
+): Candidato | null {
+  let melhor: Candidato | null = null;
+  for (const padrao of regra.padroes) {
+    const exato = igual(nome, padrao);
+    const parcial = !exato && !regra.exata && contem(nome, padrao);
+    const noComentario = !regra.exata && contem(comentario, padrao);
+    if (!exato && !parcial && !noComentario) continue;
+
+    const sinais: SinalMotivo[] = [];
+    let pontos = regra.peso;
+    if (exato) {
+      pontos += 2;
+      sinais.push({ tipo: "nome", texto: `o nome da coluna é "${regra.rotulo}"` });
+    } else if (parcial) {
+      pontos += 1;
+      sinais.push({ tipo: "nome", texto: `o nome da coluna contém "${regra.rotulo}"` });
+    }
+    if (noComentario) {
+      pontos += 2;
+      sinais.push({ tipo: "comentario", texto: `o COMMENT da coluna cita "${regra.rotulo}"` });
+    }
+    if (padrao.length > 1) pontos += 1;
+    if (regra.tipos) {
+      if (compativel(familia, regra.tipos)) {
+        pontos += 1;
+        sinais.push({ tipo: "tipo", texto: `o tipo ${tipoSql} combina` });
+      } else {
+        pontos -= 2;
+        sinais.push({ tipo: "tipo", texto: `o tipo ${tipoSql} não é o esperado` });
+      }
+    }
+    const ctxBonus = bonusDeContexto(regra, ctx);
+    pontos += ctxBonus;
+    if (ctxBonus > 0) {
+      sinais.push({ tipo: "tabela", texto: explicaContexto(ctx, nomeTabela) });
+    } else if (ctxBonus < 0) {
+      sinais.push({ tipo: "tabela", texto: explicaContexto(ctx, nomeTabela) });
+    }
+
+    const candidato: Candidato = {
+      regra,
+      indice,
+      pontuacao: pontos,
+      sinais,
+      casouPeloNome: exato || parcial,
+    };
+    if (!melhor || candidato.pontuacao > melhor.pontuacao) melhor = candidato;
+  }
+  return melhor;
+}
+
+function explicaContexto(ctx: ContextoCalculado, _tabela: string): string {
+  return ctx.porque;
+}
+
+function precedencia(c: Categoria): number {
+  return CATEGORIAS.indexOf(c);
+}
+
+function confiancaDe(pontos: number): Confianca {
+  if (pontos >= LIMIAR_ALTA) return "alta";
+  if (pontos >= LIMIAR_MEDIA) return "media";
+  return "baixa";
+}
+
+function temProtecao(nome: readonly string[], familia: FamiliaTipo): boolean {
+  return familia === "binario" || nome.some((t) => VOCAB_PROTECAO.has(t));
+}
+
+export function classificarColuna(
+  tabela: ParsedTable,
+  coluna: ParsedColumn,
+  ctx: ContextoCalculado,
+  regras: readonly Regra[] = REGRAS,
+): ClassificacaoColuna {
+  const nome = tokensDe(coluna.name, DICIONARIO);
+  const comentario = coluna.comment ? tokensDe(coluna.comment, DICIONARIO) : [];
+  const familia = familiaDoTipo(coluna.baseType, coluna.typeArgs);
+
+  let vencedor: Candidato | null = null;
+  regras.forEach((regra, indice) => {
+    const c = avaliarRegra(regra, indice, nome, comentario, familia, ctx, coluna.rawType, tabela.name);
+    if (!c || c.pontuacao < PONTUACAO_MINIMA) return;
+    if (!vencedor) {
+      vencedor = c;
+      return;
+    }
+    const a = c.regra.categoria;
+    const b = vencedor.regra.categoria;
+    if (
+      c.pontuacao > vencedor.pontuacao ||
+      (c.pontuacao === vencedor.pontuacao && precedencia(a) < precedencia(b))
+    ) {
+      vencedor = c;
+    }
+  });
+
+  const base = {
+    tabela: tabela.name,
+    coluna: coluna.name,
+    tipoSql: coluna.rawType,
+    protecaoAparente: temProtecao(nome, familia),
+    origem: "regra" as const,
+  };
+
+  if (!vencedor) {
+    return {
+      ...base,
+      categoria: "nao_identificado",
+      subtipo: null,
+      pessoal: "nao",
+      sensivel: false,
+      altoRisco: false,
+      confianca: "baixa",
+      motivo: "nada no nome, no tipo ou no COMMENT da coluna indica dado pessoal",
+      ruleId: null,
+      pontuacao: 0,
+      fontes: ["LGPD-5-I"],
+      nota: null,
+    };
+  }
+
+  const v: Candidato = vencedor;
+  const categoria = v.regra.categoria;
+  const pessoal: Pessoal = v.regra.pessoal ?? (categoria === "nao_identificado" ? "nao" : "sim");
+  const motivo = v.sinais.map((s) => s.texto).join("; ");
+  return {
+    ...base,
+    categoria,
+    subtipo: v.regra.subtipo ?? null,
+    pessoal,
+    sensivel: categoria === "sensivel",
+    altoRisco: categoria === "financeiro",
+    confianca: confiancaDe(v.pontuacao),
+    motivo: motivo === "" ? `regra ${v.regra.id}` : motivo,
+    ruleId: v.regra.id,
+    pontuacao: v.pontuacao,
+    fontes: v.regra.fontes,
+    nota: v.regra.nota ?? null,
+  };
+}

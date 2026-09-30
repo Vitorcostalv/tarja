@@ -6,12 +6,12 @@ import { parseDdl } from "../lib/sql/parser";
  * Confere só a consistência entre os .sql e os gabaritos (nenhuma coluna sem gabarito,
  * nenhum gabarito sem coluna). Não usa o classificador.
  */
-for (const corpus of ["dev", "validation"] as const) {
+for (const corpus of ["dev", "validation", "external"] as const) {
   describe(`corpus ${corpus}: gabarito x DDL`, () => {
     const schemas = loadCorpus(`corpus/${corpus}`);
 
-    it("existem os cinco domínios", () => {
-      expect(schemas.length).toBe(5);
+    it("existem os schemas esperados", () => {
+      expect(schemas.length).toBe(corpus === "external" ? 3 : 5);
     });
 
     for (const s of schemas) {

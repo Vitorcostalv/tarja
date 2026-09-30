@@ -1,0 +1,32 @@
+# Gabarito: employees (EXTERNO, terceiros). Escrito antes de rodar o classificador neste arquivo.
+# Datas de vigência (from_date/to_date) de vínculo, cargo e salário ficam com "?" (depende).
+
+employees.emp_no idd
+employees.birth_date out
+employees.first_name idd
+employees.last_name idd
+employees.gender out
+employees.hire_date out
+
+departments.dept_no nid
+departments.dept_name nid
+
+dept_manager.emp_no nid
+dept_manager.dept_no nid
+dept_manager.from_date out ?
+dept_manager.to_date out ?
+
+dept_emp.emp_no nid
+dept_emp.dept_no nid
+dept_emp.from_date out ?
+dept_emp.to_date out ?
+
+titles.emp_no nid
+titles.title out
+titles.from_date out ?
+titles.to_date out ?
+
+salaries.emp_no nid
+salaries.salary fin
+salaries.from_date out ?
+salaries.to_date out ?

@@ -21,7 +21,12 @@ const OTHER_KNOWN_STATEMENTS = new Set([
   "alter", "drop", "insert", "update", "delete", "replace", "select", "set", "use", "lock",
   "unlock", "truncate", "rename", "grant", "revoke", "delimiter", "start", "begin", "commit",
   "rollback", "with", "call", "analyze", "optimize", "flush", "show", "describe", "desc", "explain",
-  "load", "copy", "declare", "if", "while", "end", "comment",
+  "load", "copy", "declare", "if", "while", "end", "comment", "source", "open", "close", "fetch", "loop", "leave",
+]);
+
+const OBJETOS_CREATE = new Set([
+  "view", "trigger", "procedure", "function", "event", "index", "database", "schema", "user", "role", "sequence", "unique",
+  "fulltext", "spatial", "definer", "server", "tablespace",
 ]);
 
 const LONG_SECOND_WORDS = new Set(["varchar", "varbinary", "char", "character", "text", "blob"]);
@@ -430,6 +435,31 @@ export function parseDdl(text: string): ParseResult {
       i++;
       continue;
     }
+    // DELIMITER troca o terminador para poder escrever procedimentos e triggers (com ";" dentro).
+    // Esses blocos ficam fora do escopo: pulamos tudo até o "DELIMITER ;" que restaura o normal.
+    if (lower(tokens[i]) === "delimiter") {
+      const head = tokens[i] as Token;
+      let k = i + 1;
+      while (k < n && (tokens[k] as Token).line === head.line) k++;
+      const novo = tokens.slice(i + 1, k).map((t) => t.value).join("");
+      i = k;
+      if (novo !== ";" && novo !== "") {
+        result.ignored.push({ kind: "DELIMITER (procedimento, função ou trigger)", line: head.line });
+        while (i < n) {
+          if (lower(tokens[i]) === "delimiter") {
+            const l = (tokens[i] as Token).line;
+            let m = i + 1;
+            while (m < n && (tokens[m] as Token).line === l) m++;
+            const valor = tokens.slice(i + 1, m).map((t) => t.value).join("");
+            i = m;
+            if (valor === ";") break;
+          } else {
+            i++;
+          }
+        }
+      }
+      continue;
+    }
     if (semi < i) {
       semi = i;
       while (semi < n && !isPunct(tokens[semi], ";")) semi++;
@@ -445,9 +475,10 @@ export function parseDdl(text: string): ParseResult {
         i = next > i ? next : end;
         continue;
       }
+      // CREATE [OR REPLACE] [ALGORITHM=..] [DEFINER=..] [SQL SECURITY ..] VIEW|TRIGGER|PROCEDURE|FUNCTION|...
       let k = i + 1;
-      while (["or", "replace", "algorithm", "definer", "sql"].includes(lower(tokens[k])) && k < end) k++;
-      const what = lower(tokens[k]).toUpperCase() || "?";
+      while (k < end && k < i + 14 && !OBJETOS_CREATE.has(lower(tokens[k]))) k++;
+      const what = OBJETOS_CREATE.has(lower(tokens[k])) ? lower(tokens[k]).toUpperCase() : "?";
       const ignored: IgnoredStatement = { kind: `CREATE ${what}`, line: head.line };
       result.ignored.push(ignored);
     } else if (w0 && OTHER_KNOWN_STATEMENTS.has(w0)) {
