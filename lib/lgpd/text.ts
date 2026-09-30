@@ -95,7 +95,7 @@ export function singular(token: string, protegidos: ReadonlySet<string>): string
 const TIPOS_TEXTO = new Set(["char", "varchar", "nchar", "nvarchar", "enum", "set", "json", "national varchar", "national char", "character varying", "character"]);
 const TIPOS_TEXTO_LONGO = new Set(["tinytext", "text", "mediumtext", "longtext", "long varchar"]);
 const TIPOS_NUMERO = new Set([
-  "int", "integer", "smallint", "mediumint", "bigint", "decimal", "numeric", "float", "double", "double precision", "real", "dec", "fixed",
+  "tinyint", "int", "integer", "smallint", "mediumint", "bigint", "decimal", "numeric", "float", "double", "double precision", "real", "dec", "fixed",
 ]);
 const TIPOS_DATA = new Set(["date", "datetime", "timestamp", "time", "year"]);
 const TIPOS_BINARIO = new Set(["blob", "tinyblob", "mediumblob", "longblob", "binary", "varbinary", "long varbinary"]);

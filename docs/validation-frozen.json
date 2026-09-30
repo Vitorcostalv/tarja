@@ -1,0 +1,12 @@
+{
+  "clinica_legado.gold.txt": "f21bfbbcf48e525484d34f3ba7ebc98eecd292b71b261cb8dcc929f0297eacf5",
+  "clinica_legado.sql": "91c4de15dcc130fd60a1424b3e4e8661c012d7fbc754ff7b0fb8971d61749d22",
+  "escola_mista.gold.txt": "a9cb98e06967bc5372a61bec337b9f2b344f72d577530fb32e3a711388ec9377",
+  "escola_mista.sql": "f7c7d883893f96f5c37afd0a994a6d01604918b1e1730f975b039a4a2bef29c5",
+  "fintech_opaca.gold.txt": "4c70de16b9ebc3ec6f46a1581f8c695fa73a8078c7ed45dcf91b6437a46b483c",
+  "fintech_opaca.sql": "29768281bc72481880b9df1a9c771ab2a2fa51767064da79164b3fccbc1217f1",
+  "marketplace_en.gold.txt": "5106aaafb81630961a9d18fb02b6702f2e1f8b0034c3bf83917117255be2f015",
+  "marketplace_en.sql": "b9ec59928ba8f1a27266290c88b585c7c5b49d4bd6d2bf525dfb942382d0cd53",
+  "rh_misto.gold.txt": "ef8f8556999a8dc25e0d527a961f07c3de304c8362126721ac4ab20d5debc75c",
+  "rh_misto.sql": "4bed9210b613379573d9c878ef944c6cd969548ef5334fdbd65ea30bb024c492"
+}

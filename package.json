@@ -10,9 +10,12 @@
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:slow": "vitest run --config vitest.slow.config.ts",
+    "test:slow": "vitest run --config vitest.slow.config.ts --coverage",
     "test:all": "npm test && npm run test:slow",
-    "corpus:metrics": "tsx scripts/corpus-metrics.ts"
+    "corpus:metrics": "tsx scripts/corpus-metrics.ts",
+    "corpus:validacao": "tsx scripts/corpus-metrics.ts --validacao",
+    "corpus:externo": "tsx scripts/corpus-metrics.ts --externo",
+    "freeze:validacao": "tsx scripts/freeze-validation.ts"
   },
   "dependencies": {
     "next": "^16.3.8",
